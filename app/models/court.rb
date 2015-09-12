@@ -16,7 +16,7 @@ class Court < ActiveRecord::Base
   end
 
   ALIASES = {
-    "CITY OF ST. LOUIS" => "ST. LOUIS CITY",
+    "ST. LOUIS CITY" => "CITY OF ST. LOUIS",
     "TOWN & COUNTRY" => "TOWN AND COUNTRY"
   }.freeze
 

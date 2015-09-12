@@ -11,13 +11,22 @@ require "csv"
 
 skip = ENV["SKIP"].to_s.split(",")
 
+def announce(message)
+  puts "\n\e[34;1m#{message}...\e[0m"
+end
+
+
 
 # Import MunicipalCourtLocations.csv, courts.geojson
 
 unless skip.member?("courts")
   Court.delete_all
+
+
+
+  announce "Importing MunicipalCourtLocations.csv..."
   rows = CSV.read(Rails.root.join("db/MunicipalCourtLocations.csv"), headers: true)
-  pbar = ProgressBar.new("courts", rows.count)
+  pbar = ProgressBar.new("progress", rows.count)
   rows.each do |row|
     Court.create!(
       name: row["Municipali"],
@@ -31,9 +40,41 @@ unless skip.member?("courts")
 
 
 
+  announce "Importing MunicipalCourtWebsites.csv..."
+  rows = CSV.read(Rails.root.join("db/MunicipalCourtWebsites.csv"), headers: true)
+  unmatched_courts = []
+  pbar = ProgressBar.new("progress", rows.count)
+  rows.each do |row|
+    next if row["Municipality"].nil?
+
+    court = Court.find_by_name row["Municipality"]
+    if court
+      court.update_attributes!(
+        municipal_website: row["Municipal Website"],
+        website: row["Municipal Court Website"],
+        online_payment_provider: row["Online Payment System Provider"])
+    else
+      unmatched_courts.push row["Municipality"]
+    end
+    pbar.inc
+  end
+  pbar.finish
+
+  if unmatched_courts.any?
+    unmatched_courts = unmatched_courts.uniq.sort
+    puts "\n\e[34mDidn't find website data for #{unmatched_courts.count} courts in `Municipal Court Websites.csv`:"
+    unmatched_courts.each do |name|
+      puts "  #{name}"
+    end
+    print "\e[0m"
+  end
+
+
+
+  announce "Importing courts.geojson..."
   geometry = ActiveSupport::JSON.decode(File.read(Rails.root.join("db/courts.geojson")))["features"]
   unmatched_courts = []
-  pbar = ProgressBar.new("geometry", geometry.count)
+  pbar = ProgressBar.new("progress", geometry.count)
   geometry.each do |feature|
     court = Court.find_by_name feature["properties"]["court_name"]
     if court
@@ -51,7 +92,7 @@ unless skip.member?("courts")
     unmatched_courts.each do |name|
       puts "  #{name}"
     end
-    print "\e[0m\n"
+    print "\e[0m"
   end
 
   unplotted_courts = Court.where(geometry: nil).pluck(:name).uniq.sort
@@ -60,7 +101,7 @@ unless skip.member?("courts")
     unplotted_courts.each do |name|
       puts "  #{name}"
     end
-    print "\e[0m\n"
+    print "\e[0m"
   end
 end
 
@@ -69,10 +110,11 @@ end
 # Import citations.csv
 
 unless skip.member?("citations")
+  announce "Importing citations.csv..."
   missing_citation_courts = []
   Citation.delete_all
   rows = CSV.read(Rails.root.join("db/citations.csv"), headers: true)
-  pbar = ProgressBar.new("citations", rows.count)
+  pbar = ProgressBar.new("progress", rows.count)
   rows.each do |row|
     citation = Citation.new(row.to_h).tap(&:save!)
     missing_citation_courts.push citation.court_location if citation.court_location && !citation.court
@@ -95,9 +137,10 @@ end
 # Import violations.csv
 
 unless skip.member?("violations")
+  announce "Importing violations.csv..."
   Violation.delete_all
   rows = CSV.foreach(Rails.root.join("db/violations.csv"), headers: true)
-  pbar = ProgressBar.new("violations", rows.count)
+  pbar = ProgressBar.new("progress", rows.count)
   rows.each do |row|
     attrs = row.to_h
     attrs["fine_amount"] = attrs["fine_amount"][1..-1].to_d if attrs["fine_amount"]

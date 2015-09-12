@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150912152422) do
+ActiveRecord::Schema.define(version: 20150912155208) do
 
   create_table "citations", force: :cascade do |t|
     t.string  "citation_number"
@@ -28,6 +28,9 @@ ActiveRecord::Schema.define(version: 20150912152422) do
     t.string "zip_code"
     t.float  "lat"
     t.float  "long"
+    t.string "municipal_website"
+    t.string "website"
+    t.string "online_payment_provider"
   end
 
   create_table "people", force: :cascade do |t|
