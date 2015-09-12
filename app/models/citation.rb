@@ -25,7 +25,7 @@ class Citation < ActiveRecord::Base
 private
 
   def find_or_create_associated_court
-    self.court = Court.find_or_create_by(name: court_location, address: court_address) if court_location
+    self.court = Court.find_by_name(court_location) if court_location
   end
 
   def find_or_create_associated_person
