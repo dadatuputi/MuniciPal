@@ -84,7 +84,7 @@ class TextMessagesController < ApplicationController
   def sms_command_status(message="")
     # TODO Show current user's status
     message.concat(STATUS_NONE)
-    messageif (state.)
+    #messageif (state.)
   end
 
   def sms_send(sms)
