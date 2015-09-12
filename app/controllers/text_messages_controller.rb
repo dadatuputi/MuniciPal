@@ -10,22 +10,21 @@ class TextMessagesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def receive
-    # TODO: process whatever params come from the service to get :phone_number and :text
-    puts params
-    from = params["From"]
-    to = params["To"]
-    text = params["Text"]
+    byebug
+    sms = SMS.new(params)
+    return head :bad_request if !sms.valid?
 
-    if text.casecmp "Marco"
-
+    byebug
+    if !(sms.text.casecmp "Marco")
+      reply = self.message_send(sms.from, "Polo")
     else
-      reply = self.send(to, "Polo")
+      reply = self.message_send(sms.from, sms.text)
     end
-      reply = self.send(to, text)
-    puts reply
+
+    head :ok
   end
 
-  def send(to, text)
+  def message_send(to, text)
     p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
     # Send SMS
@@ -37,8 +36,9 @@ class TextMessagesController < ApplicationController
       'url' => 'https://municipal-app.herokuapp.com/texts/report', # The URL to which with the status of the message is sent
       'method' => 'POST' # The method used to call the url
     }
+
     response = p.send_message(params)
-    return response
+    response
   end
 
   def report
