@@ -11,7 +11,7 @@ class TextMessagesController < ApplicationController
 
   def receive
     byebug if Rails.env.development?
-    sms = SMS.new(params)
+    sms = SMS.new(params["To"], params["From"], params["Text"])
     return head :bad_request if !sms.valid?
 
     # Send message off to get handled
@@ -33,20 +33,23 @@ class TextMessagesController < ApplicationController
     # Route commands
     case firstword
     when "HELLO".downcase
-      sms_command_hello
+      text = sms_command_hello
     when "HELP".downcase
-      sms_command_help
+      text = sms_command_help
     when "STOP".downcase
-      sms_command_stop
+      text = sms_command_stop
     when "STATUS".downcase
-      sms_command_status
+      text = sms_command_status
     else
-      sms_command_help("Unknown command.\n\n")
+      text = sms_command_help("Unknown command.\n\n")
     end
 
     # TODO Identify State
 
 
+    # Send response
+    sms_to_send = SMS.new(sms.from, sms.to, text)
+    sms_send(sms_to_send) if sms_to_send.valid?
   end
 
   # COMMAND FUNCTIONS
