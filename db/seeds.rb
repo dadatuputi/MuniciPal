@@ -13,7 +13,7 @@ Citation.delete_all
 rows = CSV.read(Rails.root.join("db/citations.csv"), headers: true)
 pbar = ProgressBar.new("citations", rows.count)
 rows.each do |row|
-  Citation.create!(row.to_h)
+  Citation.new(row.to_h).save!
   pbar.inc
 end
 pbar.finish
