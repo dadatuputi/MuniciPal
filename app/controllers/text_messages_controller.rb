@@ -11,11 +11,17 @@ class TextMessagesController < ApplicationController
 
   def receive
     # TODO: process whatever params come from the service to get :phone_number and :text
-    byebug
+    puts params
     from = params["From"]
     to = params["To"]
     text = params["Text"]
-    reply = self.send()
+
+    if text.casecmp "Marco"
+
+    else
+      reply = self.send(to, "Polo")
+    end
+      reply = self.send(to, text)
     puts reply
   end
 
@@ -37,6 +43,6 @@ class TextMessagesController < ApplicationController
 
   def report
     # TODO handle report callbacks
-    byebug
+    puts params
   end
 end
