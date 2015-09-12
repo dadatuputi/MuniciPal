@@ -14,7 +14,7 @@ class TextMessagesController < ApplicationController
     sms = SMS.new(params)
     return head :bad_request if !sms.valid?
 
-    if !(sms.text.casecmp "Marco")
+    if (sms.text.casecmp "Marco").zero?
       reply = self.message_send(sms.from, "Polo")
     else
       reply = self.message_send(sms.from, sms.text)
@@ -43,5 +43,6 @@ class TextMessagesController < ApplicationController
   def report
     # TODO handle report callbacks
     puts params
+    head :ok
   end
 end
