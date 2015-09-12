@@ -4,22 +4,22 @@
 
 1. Clone the repo
 
-```
-git clone git@github.com:elBradford/MuniciPal.git
-cd MuniciPal
-```
+    ```
+    git clone git@github.com:elBradford/MuniciPal.git
+    cd MuniciPal
+    ```
 
 2. Download gems
 
-```
-bundle
-```
+    ```
+    bundle
+    ```
 
 3. Interact with the data in the console
 
-```
-bundle exec rails c
-```
+    ```
+    bundle exec rails c
+    ```
 
 ```ruby
 # How many citations are in the CSV file?
@@ -41,17 +41,17 @@ durations = Citation.where("court_date IS NOT NULL AND citation_date IS NOT NULL
 
 2. Create a topic branch for your work
 
-```
-git checkout -b add-cool-feature
-```
+    ```
+    git checkout -b add-cool-feature
+    ```
 
 3. Code
 
 4. Push your work to GitHub
 
-```
-git push origin add-cool-feature
-```
+    ```
+    git push origin add-cool-feature
+    ```
 
 5. Create a Pull Request
 
@@ -67,12 +67,12 @@ To deploy to Heroku:
 
 1. One-time Setup
 
-```
-git remote add heroku git@heroku.com:municipal-app.git
-```
+    ```
+    git remote add heroku git@heroku.com:municipal-app.git
+    ```
 
 2. Doing a deploy (from the `master` branch)
 
-```
-git push heroku master
-```
+    ```
+    git push heroku master
+    ```
