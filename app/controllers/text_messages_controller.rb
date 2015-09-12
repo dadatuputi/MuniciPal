@@ -41,7 +41,7 @@ class TextMessagesController < ApplicationController
     when "STATUS".downcase
       text = sms_command_status
     else
-      text = sms_command_help("Unknown command.\n\n")
+      text = sms_command_help("#{firstword} is an unknown command.\n\n")
     end
 
     # TODO Identify State
@@ -83,9 +83,9 @@ class TextMessagesController < ApplicationController
 
     # Send SMS
     params = {
-      'src' => FROM_NUMBER,
-      'dst' => to,
-      'text' => text,
+      'src' => sms.from,
+      'dst' => sms.to,
+      'text' => sms.text,
       'type' => 'sms',
       'url' => 'https://municipal-app.herokuapp.com/texts/report', # The URL to which with the status of the message is sent
       'method' => 'POST' # The method used to call the url
