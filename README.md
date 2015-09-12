@@ -21,18 +21,35 @@
     bundle exec rails c
     ```
 
-```ruby
-# How many citations are in the CSV file?
-Citation.count # => 1000
+    ```ruby
+    # How many courts do we know of?
+    Court.count # => 84
 
-# How many violations have a warrant?
-Violation.where(warrant_status: true).count # => 243
+    # Does the court support online payments?
+    Court.first.supports_online_payments? # => true
+    
+    # What do courts use to accept online payments?
+    Court.pluck(:online_payment_provider).each_with_object(Hash.new(0)) { |provider, hash| hash[provider] += 1 } # => {"iPayCourt"=>24, "IPG"=>12, nil=>25, "Collector Solutions"=>1, "Ncourt"=>21, "Municipal Online Payments"=>1}
+    
+    # How many citations are in the CSV file?
+    Citation.count # => 1000
 
-# What's the average time between citation date and court date?
-durations = Citation.where("court_date IS NOT NULL AND citation_date IS NOT NULL").pluck(:court_date, :citation_date).map { |a, b| a - b }
-(durations.sum / durations.count).to_f # => 12.36 days
+    # How many violations have a warrant?
+    Violation.where(warrant_status: true).count # => 243
 
-```
+    # What's the average time between citation date and court date?
+    durations = Citation.where("court_date IS NOT NULL AND citation_date IS NOT NULL").pluck(:court_date, :citation_date).map { |a, b| a - b }
+    (durations.sum / durations.count).to_f # => 12.36 days
+    
+    # How many people are in the system
+    Person.count # => 806
+    
+    # How many citations does a person have?
+    Person.find(576).citations.count # => 3
+    
+    # How many warrants does a person have?
+    Person.find(576).warrants.count # => 2
+    ```
 
 
 ### Contributing
