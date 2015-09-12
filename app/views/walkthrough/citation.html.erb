@@ -1,0 +1,11 @@
+<h1><%= @citation.citation_number %></h1>
+
+<% if @other_citations.any? %>
+  <%= link_to person_path(@person) do %>
+    <%= @person.name %>,
+    you have <%= pluralize @other_citations.count, "other citation" %>
+  <% if @other_citations.warrants.any? %>
+    and <%= pluralize @other_citations.warrants.count, "warrant" %>
+  <% end %>
+  <% end %>
+<% end %>

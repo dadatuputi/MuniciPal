@@ -1,0 +1,48 @@
+<h1><%= @person.name %></h1>
+
+<h3>
+  You have <%= pluralize @citations.count, "citation" %>
+<% if @citations.warrants.any? %>
+  <em>and <%= pluralize @citations.warrants.count, "warrant" %></em>
+<% end %>
+</h3>
+
+<ul class="citations">
+<% @person.citations.each do |citation| %>
+  <li class="citation">
+    <%= link_to citation_path(citation) do %>
+      <div class="citatation-summary">
+        <div class="citation-number"><%= citation.citation_number %></div>
+        <ul class="citation-violations">
+          <% citation.violations.each do |violation| %>
+            <li class="citation-violation violation">
+              <span class="violation-description"><%= violation.violation_description %></span>
+              <% if violation.warrant? %>
+                <!--<img class="icon" src="/images/clipboard.svg" alt="Clipboard pictogram">
+                <img class="icon" src="/images/fingerprint.svg" alt="Fingerprint pictogram">
+                <img class="icon" src="/images/flag.svg" alt="Flag pictogram">
+                <img class="icon" src="/images/shield.svg" alt="Shield pictogram">
+                <i class="fa fa-warning"></i> -->
+                <i class="fa fa-gavel" data-toggle="popover" data-trigger="hover" data-placement="top" title="Warrant" data-content="There is a warrant out for your arrest"></i>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="citation-court court">
+        <span class="court-municipality"><%= citation.court.name %></span>
+        <% if citation.court_date %>
+          <span class="court-date date">
+            <span class="date-month"><%= citation.court_date.strftime("%b") %></span>
+            <span class="date-day"><%= citation.court_date.strftime("%-d") %></span>
+          </span>
+        <% else %>
+          <span class="court-date">
+            TBD
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </li>
+<% end %>
+</ul>

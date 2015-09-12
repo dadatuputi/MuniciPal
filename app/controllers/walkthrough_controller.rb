@@ -19,4 +19,16 @@ class WalkthroughController < ApplicationController
       redirect_to root_path, notice: "You have no citations"
     end
   end
+
+  def person
+    @person = Person.find params[:id]
+    @citations = @person.citations
+  end
+
+  def citation
+    @citation = Citation.find params[:id]
+    @person = @citation.person
+    @other_citations = @person.citations.where.not(id: @citation.id)
+  end
+
 end

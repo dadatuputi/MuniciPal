@@ -1,5 +1,6 @@
 body {
   font-family: 'Lato', sans-serif;
+  font-size: 20px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -19,6 +20,7 @@ h1 {
 
 h2.phone-number {
   margin: 0;
+  font-size: 2.33em;
 }
 
 .callout {
@@ -27,4 +29,13 @@ h2.phone-number {
   padding: 1em;
 
   h3 { margin-top: 0; }
+}
+
+h3 em {
+  font-style: normal;
+  background: #fffccf;
+}
+
+.icon {
+  height: 1em;
 }

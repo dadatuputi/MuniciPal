@@ -6,4 +6,8 @@ class Violation < ActiveRecord::Base
     where(warrant_status: true)
   end
 
+  def warrant?
+    warrant_status?
+  end
+
 end

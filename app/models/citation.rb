@@ -20,6 +20,14 @@ class Citation < ActiveRecord::Base
   before_create :find_or_create_associated_court
   before_create :find_or_create_associated_person
 
+  def self.violations
+    Violation.where(citation_number: pluck(:citation_number))
+  end
+
+  def self.warrants
+    violations.warrants
+  end
+
 
 
 private
