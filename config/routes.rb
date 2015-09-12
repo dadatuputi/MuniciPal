@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post "texts/incoming" => "text_messages#receive"
   
   
+  post "texts/report" => "text_messages#report"
   get "geodata/muny" => "geo_data#municipalities"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -12,16 +13,17 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'walkthrough#index'
 
+  scope "walkthrough" do
+    get 'court/:id' => "walkthrough#court", as: :court
+    get 'citation/:id'=> "walkthrough#citation", as: :citation
+    get 'person/:id' => "walkthrough#person", as: :person
+    post "search" => "walkthrough#search"
+  end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
+  #   get 'products/:texts/incomingroute with options:
   #   resources :products do
   #     member do
   #       get 'short'
