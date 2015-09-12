@@ -11,25 +11,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150912123741) do
+ActiveRecord::Schema.define(version: 20150912125207) do
 
   create_table "citations", force: :cascade do |t|
     t.string  "citation_number"
     t.date    "citation_date"
-    t.string  "first_name"
-    t.string  "last_name"
-    t.date    "date_of_birth"
-    t.string  "defendant_address"
-    t.string  "defendant_city"
-    t.string  "defendant_state"
-    t.string  "drivers_license_number"
     t.date    "court_date"
     t.integer "court_id"
+    t.integer "person_id"
   end
 
   create_table "courts", force: :cascade do |t|
     t.string "name"
     t.string "address"
+  end
+
+  create_table "people", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.date   "date_of_birth"
+    t.string "address"
+    t.string "city"
+    t.string "state"
+    t.string "drivers_license_number"
   end
 
   create_table "violations", force: :cascade do |t|
