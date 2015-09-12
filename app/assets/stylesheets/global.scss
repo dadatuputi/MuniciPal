@@ -1,6 +1,12 @@
 body {
   font-family: 'Lato', sans-serif;
   font-size: 20px;
+  padding: 0 3.33em;
+}
+
+.stretcher {
+  margin-left: -3.33em;
+  margin-right: -3.33em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -41,4 +47,39 @@ h3 em {
 
 .icon {
   height: 1em;
+}
+
+.fake {
+  color: #888;
+}
+
+h1 + subtitle {
+  margin-top: -1em;
+}
+
+subtitle {
+  display: block;
+  text-align: center;
+}
+
+.callout.callout-primary {
+  background: #e6f1fb;
+  border-radius: 0.5em;
+
+  h3 { color: #365773; }
+  p { margin-bottom: 0; }
+
+  .buttons { float: right; }
+}
+
+.callout.callout-disabled {
+  background: #eee;
+  border-radius: 0.5em;
+
+  h3 { color: #555; }
+  p { margin-bottom: 0; }
+}
+
+.buttons {
+  text-align: right;
 }

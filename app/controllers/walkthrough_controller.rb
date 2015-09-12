@@ -27,8 +27,10 @@ class WalkthroughController < ApplicationController
 
   def citation
     @citation = Citation.find params[:id]
+    @court = @citation.court
     @person = @citation.person
     @other_citations = @person.citations.where.not(id: @citation.id)
+    @today = Date.today
   end
 
 end

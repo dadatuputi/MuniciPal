@@ -1,17 +1,26 @@
 <h1><%= @person.name %></h1>
 
-<h3>
+<subtitle>
   You have <%= pluralize @citations.count, "citation" %>
 <% if @citations.warrants.any? %>
   <em>and <%= pluralize @citations.warrants.count, "warrant" %></em>
 <% end %>
-</h3>
+</subtitle>
 
 <ul class="citations">
 <% @person.citations.each do |citation| %>
   <li class="citation">
     <%= link_to citation_path(citation) do %>
       <div class="citatation-summary">
+        <div class="citation-date date">
+          <% if citation.citation_date %>
+            <span class="date-month"><%= citation.citation_date.strftime("%b") %></span>
+            <span class="date-day"><%= citation.citation_date.strftime("%-d") %></span>
+          <% else %>
+            <span class="date-month fake">Quz</span>
+            <span class="date-day fake"><%= 17 %></span>
+          <% end %>
+        </div>
         <div class="citation-number"><%= citation.citation_number %></div>
         <ul class="citation-violations">
           <% citation.violations.each do |violation| %>
@@ -24,19 +33,16 @@
           <% end %>
         </ul>
       </div>
-      <div class="citation-court court">
-        <span class="court-municipality"><%= citation.court.name %></span>
-        <% if citation.court_date %>
-          <span class="court-date date">
-            <span class="date-month"><%= citation.court_date.strftime("%b") %></span>
-            <span class="date-day"><%= citation.court_date.strftime("%-d") %></span>
-          </span>
-        <% else %>
-          <span class="court-date">
-            TBD
-          </span>
-        <% end %>
-      </div>
+      <% if citation.court %>
+        <div class="citation-court court">
+          <span class="court-municipality"><%= citation.court.name %></span>
+          <% if citation.court_date %>
+            <span class="court-date"><%= citation.court_date.strftime("%b %-d") %></span>
+          <% else %>
+            <span class="court-date">TBD</span>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </li>
 <% end %>

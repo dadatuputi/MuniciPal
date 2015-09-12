@@ -9,20 +9,22 @@
 
     .citatation-summary {
       float: left;
+      padding-left: 3.66em;
+      position: relative;
+    }
+
+    .citation-date {
+      position: absolute;
+      top: 0.66em;
+      left: 0;
+      width: 2.33em;
+      text-align: center;
+      top: 50%;
+      margin-top: -1.33em;
     }
 
     .citation-number {
       font-size: 1.33em;
-    }
-
-    .citation-violations {
-      font-size: 0.88em;
-      margin: 0;
-      padding: 0;
-    }
-
-    .citation-violation {
-      display: block;
     }
 
     .citation-court {
@@ -66,13 +68,101 @@
     display: block;
     color: inherit;
     padding: 1em 1.33em;
-//    border: 1px solid #eee;
     border-radius: 0.5em;
     text-decoration: none !important;
     overflow: hidden;
 
     &:hover {
-      background: #bbb;
+      background: #e6f1fb;
     }
   }
+}
+
+
+
+.citation-violations {
+  font-size: 0.88em;
+  margin: 0;
+  padding: 0;
+}
+
+.citation-violation {
+  display: block;
+}
+
+.violation-fees {
+  float: right;
+}
+
+
+
+.date {
+  .date-month {
+    display: block;
+    line-height: 0.88;
+  }
+  .date-day {
+    display: block;
+    font-size: 2em;
+    line-height: 0.96;
+  }
+}
+
+.fa-gavel {
+  color: #b5170d;
+  padding: 2px 4px;
+}
+
+
+
+section {
+  clear: both;
+  margin: 5em 0;
+  position: relative;
+  padding-left: 5em;
+
+  .date {
+    float: left;
+    width: 3.33em;
+    height: 3.33em;
+    text-align: center;
+    padding: 0.33em;
+    background-color: #efefef;
+    border-radius: 0.33em;
+    margin-left: 1em;
+    position: absolute;
+    left: 0;
+  }
+
+  .citation-violations {
+    padding: 0 5px;
+  }
+
+  .callout {
+    margin: 0 5px;
+  }
+
+  h2 {
+    font-weight: 300;
+    font-size: 1.66em;
+    margin: 0;
+    padding: 0.33em 0;
+
+    // optional border
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 0.5em;
+  }
+
+  .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+#street_view {
+  height: 300px;
+  width: 100%;
 }
