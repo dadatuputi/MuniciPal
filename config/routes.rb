@@ -4,8 +4,9 @@ Rails.application.routes.draw do
 
   post "texts/incoming" => "text_messages#receive"
   post "texts/report" => "text_messages#report"
+  get "texts/callback" => "text_messages#callback"
   get "geodata/muny" => "geo_data#municipalities"
-
+  post "court/feedback" => "court#feedback"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

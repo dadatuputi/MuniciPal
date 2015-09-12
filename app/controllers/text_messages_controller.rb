@@ -24,12 +24,20 @@ class TextMessagesController < ApplicationController
     head :ok
   end
 
+  def callback
+    # TODO callback with overview message
+  end
+
   # HELPER FUNCTIONS
   def sms_controller(sms)
+    # TODO Identify State
+    state = nil
+    #suzy = Person.find_by(phone_number: phone_number)
+    #suzy.name
+
     # Get Command from message
     words = sms.text.split
     words.nil? ? firstword="HELP" : firstword = words[0]
-
     # Route commands
     case firstword
     when "HELLO".downcase
@@ -40,14 +48,15 @@ class TextMessagesController < ApplicationController
       text = sms_command_stop
     when "STATUS".downcase
       text = sms_command_status
+    when "CALLME".downcase
+      text = sms_command_callme(sms, state)
     else
+      firstword = firstword[0,6].concat("...") if firstword.length > 10
       text = sms_command_help("#{firstword} is an unknown command.\n\n")
     end
 
-    # TODO Identify State
-
-
     # Send response
+    byebug if Rails.env.development?
     sms_to_send = SMS.new(sms.from, sms.to, text)
     sms_send(sms_to_send) if sms_to_send.valid?
   end
@@ -62,7 +71,7 @@ class TextMessagesController < ApplicationController
 
   def sms_command_hello(message="")
     # TODO Build Hello response - use guide
-    message.concat(WELCOME)
+    message.concat(HELLO_WELCOME)
     message
   end
 
@@ -75,7 +84,7 @@ class TextMessagesController < ApplicationController
   def sms_command_status(message="")
     # TODO Show current user's status
     message.concat(STATUS_NONE)
-    message
+    messageif (state.)
   end
 
   def sms_send(sms)
@@ -96,19 +105,39 @@ class TextMessagesController < ApplicationController
   end
 
 
+  def sms_command_callme(sms, state)
+    if state.nil?
+      return ""
+    else
+      p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
+      params = {
+          'to' => sms.from, # The phone number to which the call has to be placed
+          'from' => sms.to, # The phone number to be used as the caller id
+          'answer_url' => 'https://municipal-app.herokuapp.com/texts/callback', # The URL invoked by Plivo when the outbound call is answered
+          'answer_method' => 'GET', # The method used to call the answer_url
+          # Example for Asynchrnous request
+          #'callback_url' => "https://enigmatic-cove-3140.herokuapp.com/callback", # The URL notified by the API response is available and to which the response is sent.
+          #'callback_method' => "GET" # The method used to notify the callback_url.
+      }
+
+      # Make an outbound call
+      response = p.make_call(params)
+    end
+  end
 
   ## STATIC STRINGS
   APP_NAME = "MuniciPal".freeze
   COMMANDS = {
-    "HELLO" => "description",
+    "HELLO" => "Start the walkthrough.",
     "HELP" => "This text.",
     "STOP" => "Stop receiving ".concat(APP_NAME).concat(" messages."),
-    "STATUS" => "Check your status."
+    "STATUS" => "Check your status.",
+    "CALLME" => "Call you back with citation status."
   }.freeze
-  WELCOME = "Welcome to #{APP_NAME}\n\nTo get started send us your citation number or drivers license number."
+  HELLO_WELCOME = "Welcome to #{APP_NAME}\n\nTo get started send us a citation number or drivers license number."
   STOP_RESPONSE = "You will no longer receive messages from #{APP_NAME}"
-  STATUS_NONE = "You haven't started with #{APP_NAME} yet. Send HELLO to begin."
+  STATUS_NONE = "You haven't started a session. Say HELLO to begin walkthrough."
 
 
 end
