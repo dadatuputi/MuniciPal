@@ -1,0 +1,30 @@
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+}
+
+h1 {
+  font-style: italic;
+  text-align: center;
+  margin: 1em 0;
+}
+
+#map {
+  height: 360px;
+  margin-bottom: 3em;
+}
+
+h2.phone-number {
+  margin: 0;
+}
+
+.callout {
+  background: #efefef; // gray now, maybe pick colors Sunday morning
+  margin: 0 -5px;
+  padding: 1em;
+
+  h3 { margin-top: 0; }
+}
