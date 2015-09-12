@@ -20,7 +20,6 @@ class TextMessagesController < ApplicationController
   end
 
   def send(to, text)
-    # TODO send messages using PLIVO
     p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
     # Send SMS
