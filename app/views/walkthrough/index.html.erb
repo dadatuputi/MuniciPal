@@ -5,13 +5,14 @@
     <div class="callout">
       <h3>Lookup Your ....</h3>
       <p> an instruction </p>
-      <form action="/walkthrough/search" accept-charset="UTF-8" method="post" class="input-group form-group  form-group-lg">
+      <form action="/walkthrough/search" id="lookup-form" method="post" class="input-group form-group  form-group-lg">
         <input name="utf8" type="hidden" value="✓">
         <input type="text" name="q" class="form-control" placeholder="Search for...">
         <span class="input-group-btn">
           <button id="walkthrough-search-submit" class="btn btn-lg btn-primary" type="submit">Go!</button>
         </span>
       </form>
+      <p id="search-error-message"></p>
     </div>
   </div>
   <div class="container col-sm-6">
@@ -26,5 +27,6 @@
 <script type="text/javascript">
   $(function() {
     MunicipalMap.render();
+    Lookup.render();
   });
 </script>
