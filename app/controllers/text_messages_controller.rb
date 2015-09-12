@@ -10,11 +10,10 @@ class TextMessagesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def receive
-    byebug
+    byebug if Rails.env.development?
     sms = SMS.new(params)
     return head :bad_request if !sms.valid?
 
-    byebug
     if !(sms.text.casecmp "Marco")
       reply = self.message_send(sms.from, "Polo")
     else
