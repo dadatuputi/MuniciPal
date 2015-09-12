@@ -33,3 +33,46 @@ durations = Citation.where("court_date IS NOT NULL AND citation_date IS NOT NULL
 (durations.sum / durations.count).to_f # => 12.36 days
 
 ```
+
+
+### Contributing
+
+1. Clone the repo (see above)
+
+2. Create a topic branch for your work
+
+```
+git checkout -b add-cool-feature
+```
+
+3. Code
+
+4. Push your work to GitHub
+
+```
+git push origin add-cool-feature
+```
+
+5. Create a Pull Request
+
+Reload this page. GitHub will show a message about the branch you pushed and you can click a button to create a pull request. Do that and then send a message to our team about the Pull Request in Slack.
+
+
+
+### Deploying
+
+This is hosted on Heroku here: http://municipal-app.herokuapp.com/
+
+To deploy to Heroku:
+
+1. One-time Setup
+
+```
+git remote add heroku git@heroku.com:municipal-app.git
+```
+
+2. Doing a deploy (from the `master` branch)
+
+```
+git push heroku master
+```
