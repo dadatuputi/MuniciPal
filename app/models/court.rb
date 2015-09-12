@@ -15,6 +15,18 @@ class Court < ActiveRecord::Base
     super value.strip
   end
 
+  def online_payment_provider=(value)
+    value = value.to_s[/^[^(]*/].strip # remove parenthetical comments
+    value = nil if ["", "N/A"].member? value
+    value = "Ncourt" if value == "nCourt"
+    value = "iPayCourt" if value == "nCourt & iPayCourt"
+    super value
+  end
+
+  def supports_online_payments?
+    online_payment_provider.present?
+  end
+
   ALIASES = {
     "ST. LOUIS CITY" => "CITY OF ST. LOUIS",
     "TOWN & COUNTRY" => "TOWN AND COUNTRY"
