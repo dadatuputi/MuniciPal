@@ -39,13 +39,16 @@ durations = Citation.where("court_date IS NOT NULL AND citation_date IS NOT NULL
 
 1. Clone the repo (see above)
 
-2. Create a topic branch for your work
+2. Create a topic branch for your work (from a fresh copy of `master`)
 
     ```
+    git checkout master
+    git pull origin master
+    bundle exec rake db:migrate db:seed
     git checkout -b add-cool-feature
     ```
 
-3. Code
+3. Add the feature and commit it
 
 4. Push your work to GitHub
 
