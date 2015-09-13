@@ -145,8 +145,8 @@
         </div>
       </div>
 
-      <% if @citation && @citation.court_date %>
-        <div class="callout">
+      <% if @citation %> 
+        <div class="callout callout-primary">
           <h3>Send me a reminder </h3>
 
           <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
@@ -162,8 +162,12 @@
           </div>
           <small id="sms-message" class="text-success"></small>
         </div>
-
       <% end %>
+
+      <div class="callout callout-no-action">
+        <h3>Decorum</h3>
+        Appropriate attire is required in the courtroom. Shirts and shoes are required; no tank tops, offensive t-shirts, shorts, or hats are allowed. Cell phones and pagers must be turned off.
+      </div>
     </section>
   <% end %>
 </div>
