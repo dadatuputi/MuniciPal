@@ -16,6 +16,7 @@ $ ->
     $el.val typeItValue.substr(0, len)
     len = len + 1
     if interval and len > typeItValue.length
+      $el.focus()
       console.log("clear interval")
       window.clearInterval(interval)
 
