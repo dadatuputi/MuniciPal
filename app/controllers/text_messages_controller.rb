@@ -46,23 +46,26 @@ class TextMessagesController < ApplicationController
 
     unless user.nil?
       # English Text
-      body1 = ""
-      body1.concat("Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name)
+      body1 = "Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name)
       # Warrant
       citations = user.citations
       warrant = has_warrant(user)
-      body1.concat("Attention! You have an arrest warrant issued to you Please call 800-200-1337 for free, anonymous assistance in resolving this issue") if warrant
+      body2 = ""
+      body2.concat("Attention! You have an arrest warrant issued to you Please call 800-200-1337 for free, anonymous assistance in resolving this issue") if warrant
       # Citations
       number_citations = 0
       number_citations = citations.length unless number_citations.nil?
-      body1.concat("You have ").concat(number_citations.to_s).concat(" citations")
-      body1.concat(WARRANT_HELP_BOILERPLATE_NO_DOT) if warrant
+      body3 = ""
+      body3.concat("You have ").concat(number_citations.to_s).concat(" citations")
+      body3.concat(WARRANT_HELP_BOILERPLATE_NO_DOT) if warrant
 
       params1 = {
           'language'=> "en-GB",
           'voice' => "WOMAN"
       }
       r.addSpeak(body1, params1)
+      r.addSpeak(body2, params1)
+      r.addSpeak(body3, params1)
     end
 
 
