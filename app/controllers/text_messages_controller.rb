@@ -46,7 +46,7 @@ class TextMessagesController < ApplicationController
 
     unless user.nil?
       # English Text
-      body1 = "Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name)
+      body1 = "Welcome to ".concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name)
       # Warrant
       citations = user.citations
       warrant = has_warrant(user)
