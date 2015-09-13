@@ -8,7 +8,7 @@
 
       $.post(url, data)
         .done (data)->
-          return window.location.href = data.location if data.ok is "true"
+          return Turbolinks.visit data.location if data.ok is "true"
 
           removeErrorClass = ->
             $("#lookup-form").removeClass("has-error")

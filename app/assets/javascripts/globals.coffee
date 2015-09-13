@@ -30,4 +30,4 @@ $ ->
     )(value)
 
   Mousetrap.bind ["alt+1"], (e) ->
-    window.location = "/"
+    Turbolinks.visit "/"
