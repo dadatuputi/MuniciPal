@@ -38,14 +38,16 @@ class TextMessagesController < ApplicationController
 
   def callback
     # TODO callback with overview message
-
+    puts params
     r = Response.new()
+
+    # Build Body
 
     # English Text
     body1 = 'This is a randomly generated text can be used in your layout'
     params1 = {
         'language'=> "en-GB",
-        'voice' => "MAN"
+        'voice' => "WOMAN"
     }
 
     r.addSpeak(body1, params1)
@@ -224,7 +226,7 @@ class TextMessagesController < ApplicationController
       # Go through each citation and if one has a warrant, set flag
       citation.violations.each_with_index do |violation, index|
         warrant = violation.warrant?
-        violations.concat(VIOLATION_SHORT).concat(index+1).concat(": ")
+        violations.concat(VIOLATION_SHORT).concat((index+1).to_s).concat(": ")
         violations.concat(WARRANT_FLAG_SHORT).concat(" ") if warrant
         description = violation.violation_description[0,11].concat("...") if violation.violation_description.length > 15
         violations.concat(description).concat(" ")
