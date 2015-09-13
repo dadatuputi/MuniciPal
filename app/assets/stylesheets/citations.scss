@@ -139,7 +139,32 @@ section {
   }
 
   .callout {
+    background: #eee;
+    border-radius: 0.5em;
+    position: relative;
+    padding-right: 12em;
     margin: 0 5px;
+
+    p { margin-bottom: 0; }
+
+    .buttons {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+  }
+
+  .callout.callout-primary {
+    background: #e6f1fb;
+    border-radius: 0.5em;
+
+    h3 { color: #365773; }
+  }
+
+  .callout.callout-disabled {
+    h3 { color: #555; }
+
+    .btn { pointer-events: none !important; }
   }
 
   h2 {
