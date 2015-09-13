@@ -166,6 +166,7 @@ unless skip.member?("citations")
   announce "Importing citations.csv..."
   missing_citation_courts = []
   Citation.delete_all
+  Person.delete_all
   rows = CSV.read(Rails.root.join("db/citations.csv"), headers: true)
   pbar = ProgressBar.new("progress", rows.count)
   rows.each do |row|
