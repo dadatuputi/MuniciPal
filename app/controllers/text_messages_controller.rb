@@ -288,6 +288,7 @@ class TextMessagesController < ApplicationController
 
       # Make an outbound call
       response = p.make_call(params)
+    end
   end
 
   def lookup_citation(user, words)
