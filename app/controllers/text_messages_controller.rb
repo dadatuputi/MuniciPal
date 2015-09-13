@@ -1,14 +1,12 @@
-require 'rubygems'
-require 'plivo'
-include Plivo
-include ActionView::Helpers::TextHelper
-include ActionView::Helpers::NumberHelper
-
 AUTH_ID = "MANJYWOTGZN2UZN2VKZG"
 AUTH_TOKEN = "NGE0NDRmNDcyMWIyZWY4ZTY1Y2NiOWEwZGRlYjNi"
 FROM_NUMBER = "13306806866"
 
 class TextMessagesController < ApplicationController
+  include Plivo
+  include ActionView::Helpers::TextHelper
+  include ActionView::Helpers::NumberHelper
+
   skip_before_action :verify_authenticity_token
 
   def send_reminder
