@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'plivo'
 include Plivo
+include ActionView::Helpers::TextHelper
 include ActionView::Helpers::NumberHelper
 
 AUTH_ID = "MANJYWOTGZN2UZN2VKZG"
@@ -312,10 +313,11 @@ class TextMessagesController < ApplicationController
   def sms_command_warrant(user)
     message = ""
     unless user.nil?
-      if has_warrant(user)
-        message.concat("You have a warrant issued for your arrest. ").concat(WARRANT_HELP_BOILERPLATE)
+      warrants = user.warrants.count
+      if warrants.length >= 1
+        message.concat("There are #{pluralize warrants.count, "warrant"} issued for your arrest.\n").concat(WARRANT_HELP_BOILERPLATE)
       else
-        message.concat(WARRANT_HELP_HAS_NOT)
+        message.concat("There are no outstanding warrants for your arrest.")
       end
     end
     message
@@ -450,6 +452,5 @@ class TextMessagesController < ApplicationController
   COMMAND_UNKNOWN_ANON = " is an unkown command, citation, license number or user."
   WARRANT_HELP_BOILERPLATE = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court.  The court might be willing to schedule a hearing or mitigate the jail time. Please call 800-200-1337 for free, anonymous assistance in resolving this issue."
   WARRANT_HELP_BOILERPLATE_NO_DOT = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court  The court might be willing to schedule a hearing or mitigate the jail time Please call 800-200-1337 for free, anonymous assistance in resolving this issue"
-  WARRANT_HELP_HAS_NOT = "We can't find any warrants for you. " + WARRANT_HELP_BOILERPLATE
 
 end
