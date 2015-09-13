@@ -3,6 +3,10 @@ class Court < ActiveRecord::Base
 
   has_many :citations
 
+  def self.citations
+    Citation.where(court_id: pluck(:id))
+  end
+
   def self.find_by_name(value)
     where(["UPPER(name) = ?", normalize_name(value.upcase)]).first # compare names case-insensitively
   end
@@ -26,6 +30,7 @@ class Court < ActiveRecord::Base
   def phone_number=(value)
     value = value.to_s[/^[^(]*/].strip # remove parenthetical comments
     value = nil if value == "not listed"
+    value = value.gsub(/^(\d{3})\.(\d{3})\.(\d{4})/, '(\1) \2-\3') if value
     super value
   end
 

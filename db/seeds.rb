@@ -206,5 +206,12 @@ end
 
 
 
+# Tweaking data for the demo.
+# --------------------------------------------------------------------------- #
+
+
 # Change Martin's name to Patricia
 Person.where(drivers_license_number: "M718460675").update_all(first_name: "Patricia", last_name: "Rivera")
+
+# Populate Ladue's court's real phone number
+Court.where(name: "Ladue").update_all(phone_number: "(314) 993-3919")

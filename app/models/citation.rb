@@ -24,6 +24,10 @@ class Citation < ActiveRecord::Base
     Violation.where(citation_number: pluck(:citation_number))
   end
 
+  def self.people
+    Person.where(id: pluck(:person_id))
+  end
+
   def self.warrants
     violations.warrants
   end
