@@ -52,6 +52,7 @@ unless skip.member?("courts")
       court.update_attributes!(
         municipal_website: row["Municipal Website"],
         website: row["Municipal Court Website"],
+        phone_number: row["Court Clerk Phone Number Listed on Muni Site?"],
         online_payment_provider: row["Online Payment System Provider"])
     else
       unmatched_courts.push row["Municipality"]
