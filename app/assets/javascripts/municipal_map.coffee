@@ -1,11 +1,46 @@
 @MunicipalMap =
+
   render: ->
-    map = L.map('map').setView([38.627003, -90.199402], 13)
+    defaultStyle =
+      color: "#2262CC"
+      weight: 2
+      opacity: 0.6
+      fillOpacity: 0.1
+      fillColor: "#2262CC"
+
+    highlightStyle =
+      color: '#2262CC'
+      weight: 3
+      opacity: 0.6
+      fillOpacity: 0.65
+      fillColor: '#2262CC'
+
+    map = L.map('map').setView([38.659003, -90.199402], 10)
+
+    redirectToCourt = (url, context)->
+      window.location.href = "http://localhost:3000" + String(@)
+
+    highlightPolygon = (e) ->
+      layer = e.target
+      layer.setStyle(highlightStyle) if layer
+      # layer.closePopup() if layer
+
+    removeHighlight = (e) ->
+      layer = e.target
+      layer.setStyle(defaultStyle) if layer
+      # layer.openPopup() if layer
 
     $.get('/geodata/muny').done (data) ->
       muny_geojson = data
-      municipalities = new L.LayerGroup();
-      L.geoJson(muny_geojson).addTo(map);
+      municipalities = new L.LayerGroup()
+      onEachFeature = (feature, layer) ->
+        layer.setStyle(defaultStyle)
+        layer.on("click", redirectToCourt, feature.properties.url, @)
+        layer.on("mouseover", highlightPolygon)
+        layer.on("mouseout", removeHighlight)
+
+
+      L.geoJson(muny_geojson, onEachFeature: onEachFeature).addTo map
       return
 
     # More here: http://leaflet-extras.github.io/leaflet-providers/preview/

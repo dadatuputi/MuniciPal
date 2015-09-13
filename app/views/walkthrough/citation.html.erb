@@ -16,7 +16,13 @@
     <% end %>
   </subtitle>
 <% else %>
-  <!-- show something for the court -->
+<h1>
+  <%= @court.name %>
+</h1>
+<subtitle>
+  <%= @court.address %>
+</subtitle>
+
 <% end %>
 
 
@@ -28,7 +34,7 @@
         <span class="date-day"><%= @citation.citation_date.strftime("%-d") %></span>
       <% end %>
     </div>
-  
+
     <h2>What you were cited for</h2>
 
     <ul class="citation-violations">
@@ -56,9 +62,9 @@
     <span class="date-month"><%= @today.strftime("%b") %></span>
     <span class="date-day"><%= @today.strftime("%-d") %></span>
   </div>
-  
+
   <h2>What should I do now?</h2>
-  
+
   <% if @court.supports_online_payments? %>
     <div class="callout callout-primary">
       <h3><%= @court.name %> supports online payments</h3>

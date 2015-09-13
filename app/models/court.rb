@@ -28,7 +28,8 @@ class Court < ActiveRecord::Base
   end
 
   def online_payment_website
-    WEBSITES.fetch online_payment_provider
+    # WEBSITES.fetch online_payment_provider
+    "https://www.ipaycourt.com/frmCitationSearch.aspx?ori="
   end
 
   ALIASES = {
@@ -38,7 +39,8 @@ class Court < ActiveRecord::Base
 
   WEBSITES = {
     "iPayCourt" => "https://www.ipaycourt.com/frmCitationSearch.aspx",
-    "nCourt" => "https://www.ncourt.com/MakePayment.aspx"
+    "nCourt" => "https://www.ncourt.com/MakePayment.aspx",
+    "IPG" => "https://www.trafficpayment.com/InvoiceInfo.aspx?csdId=324&AspxAutoDetectCookieSupport=1"
   }.freeze
 
 end
