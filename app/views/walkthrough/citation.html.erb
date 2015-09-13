@@ -58,10 +58,12 @@
 <% end %>
 
 <section>
-  <div class="today date">
-    <span class="date-month"><%= @today.strftime("%b") %></span>
-    <span class="date-day"><%= @today.strftime("%-d") %></span>
-  </div>
+  <% if @citation %>
+    <div class="today date">
+      <span class="date-month"><%= @today.strftime("%b") %></span>
+      <span class="date-day"><%= @today.strftime("%-d") %></span>
+    </div>
+  <% end %>
 
   <h2>What should I do now?</h2>
 
@@ -71,7 +73,7 @@
       <div class="buttons">
         <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
       </div>
-      <p>You can pay your citation today, online, and scratch the following court date off your calendar.</p>
+      You can pay your citation today, online, and scratch the following court date off your calendar.
     </div>
   <% else %>
     <div class="callout callout-disabled">
@@ -81,19 +83,21 @@
         <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
       </div>
       <% end %>
-      <p>You may still be able to pay your citation today by calling the courthouse.</p>
+      You may still be able to pay your citation today by calling the courthouse.
     </div>
   <% end %>
 </section>
 
 <% if @court %>
   <section>
-    <div class="court-date date">
-      <% if @citation && @citation.court_date %>
-        <span class="date-month"><%= @citation.court_date.strftime("%b") %></span>
-        <span class="date-day"><%= @citation.court_date.strftime("%-d") %></span>
-      <% end %>
-    </div>
+    <% if @citation %>
+      <div class="court-date date">
+        <% if @citation.court_date %>
+          <span class="date-month"><%= @citation.court_date.strftime("%b") %></span>
+          <span class="date-day"><%= @citation.court_date.strftime("%-d") %></span>
+        <% end %>
+      </div>
+    <% end %>
 
     <h2>What to expect on your court date</h2>
     <div class="container-fluid">
@@ -117,6 +121,21 @@
       <div class="col-md-6">
         <div id="street_view" data-latitude="<%= @court.lat %>" data-longitude="<%= @court.long %>"></div>
       </div>
+    </div>
+
+    <% if @citation && @citation.court_date %>
+      <div class="callout">
+        <h3>Send me a reminder</h3>
+        <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
+        <form action="/texts/send_reminder" method="post" class="input-group form-group form-group-lg">
+          <input name="citation_id" type="hidden" value="<%= @citation.id %>">
+          <input type="tel" name="number" class="form-control" placeholder="314 555 5555">
+          <span class="input-group-btn">
+            <button class="btn btn-lg btn-primary" type="submit">Submit</button>
+          </span>
+        </form>
+      </div>
+    <% end %>
   </section>
 <% end %>
 

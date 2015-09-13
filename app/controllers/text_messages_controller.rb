@@ -9,6 +9,17 @@ FROM_NUMBER = "13306806866"
 class TextMessagesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
+  def send_reminder
+    number = params[:number].gsub(/\s*/, "")
+    number = "1#{number}" unless number.length == 11
+
+    citation = Citation.find params[:citation_id]
+    court = citation.court
+    sms_send SMS.new(number, FROM_NUMBER, "Friendly reminder! You are due in court at #{court.name} tomorrow with regard to citation ##{citation.citation_number}")
+
+    redirect_to :back
+  end
+
   def receive
     byebug if Rails.env.development?
     sms = SMS.new(params["To"], params["From"], params["Text"])
@@ -97,6 +108,7 @@ class TextMessagesController < ApplicationController
       'url' => 'https://municipal-app.herokuapp.com/texts/report', # The URL to which with the status of the message is sent
       'method' => 'POST' # The method used to call the url
     }
+    puts "\e[33m[sms:send] #{params.inspect}\e[0m"
 
     response = p.send_message(params)
     response

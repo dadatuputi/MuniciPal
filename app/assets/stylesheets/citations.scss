@@ -145,13 +145,10 @@ section {
   }
 
   .callout {
-    background: #eee;
     border-radius: 0.5em;
     position: relative;
     padding-right: 12em;
-    margin: 0 5px;
-
-    p { margin-bottom: 0; }
+    margin: 0 5px 2em;
 
     .buttons {
       position: absolute;
@@ -162,12 +159,13 @@ section {
 
   .callout.callout-primary {
     background: #e6f1fb;
-    border-radius: 0.5em;
 
     h3 { color: #365773; }
   }
 
   .callout.callout-disabled {
+    background: #eee;
+
     h3 { color: #555; }
 
     .btn { pointer-events: none !important; }
@@ -190,6 +188,7 @@ section {
     padding-right: 0;
     margin-left: -10px;
     margin-right: -10px;
+    margin-bottom: 2em;
   }
 }
 
