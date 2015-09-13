@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get "citation/:id"=> "walkthrough#citation", as: :citation
     get "person/:id" => "walkthrough#person", as: :person
     post "search" => "walkthrough#search"
+    post "confirm_birthday" => "walkthrough#confirm_birthday"
   end
 
   get "help/attorneys" => "walkthrough#find_attorneys"

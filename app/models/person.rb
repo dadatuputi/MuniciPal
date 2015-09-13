@@ -15,4 +15,10 @@ class Person < ActiveRecord::Base
     [first_name, last_name].join " "
   end
 
+  def confirm_birthday?(birthday)
+    self.date_of_birth == Date.parse(birthday)
+  rescue ArgumentError # an invalid date is not this person's birthday
+    false
+  end
+
 end
