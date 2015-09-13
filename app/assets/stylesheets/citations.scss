@@ -88,6 +88,13 @@
 
 .citation-violation {
   display: block;
+  padding: 0 5px;
+
+  &.violation-warrant {
+    background: #ffdad9;
+
+    .violation-description, .fa-gavel, .violation-fees { color: #c9302c; }
+  }
 }
 
 .violation-fees {
@@ -109,7 +116,6 @@
 }
 
 .fa-gavel {
-  color: #b5170d;
   padding: 2px 4px;
 }
 
@@ -135,7 +141,7 @@ section {
   }
 
   .citation-violations {
-    padding: 0 5px;
+    padding-right: 5px;
   }
 
   .callout {

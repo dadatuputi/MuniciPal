@@ -39,7 +39,7 @@
 
     <ul class="citation-violations">
       <% @citation.violations.each do |violation| %>
-        <li class="citation-violation violation">
+        <li class="citation-violation violation <% if violation.warrant? %>violation-warrant<% end %>">
           <span class="violation-description"><%= violation.violation_description %></span>
           <% if violation.warrant? %>
             <i class="fa fa-gavel" data-toggle="popover" data-trigger="hover" data-placement="top" title="Warrant" data-content="There is a warrant out for your arrest"></i>
