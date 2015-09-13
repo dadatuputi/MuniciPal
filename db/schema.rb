@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150912230126) do
+ActiveRecord::Schema.define(version: 20150913003423) do
 
   create_table "citations", force: :cascade do |t|
     t.string  "citation_number"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 20150912230126) do
     t.string "municipal_website"
     t.string "website"
     t.string "online_payment_provider"
+    t.string "phone_number"
   end
 
   create_table "people", force: :cascade do |t|

@@ -76,6 +76,11 @@
   <% else %>
     <div class="callout callout-disabled">
       <h3><%= @court.name %> does not support online payments</h3>
+      <% if @court.phone_number %>
+      <div class="buttons">
+        <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
+      </div>
+      <% end %>
       <p>You may still be able to pay your citation today by calling the courthouse.</p>
     </div>
   <% end %>
@@ -98,8 +103,15 @@
           <%= @court.address %><br />
           St Louis, MO <%= @court.zip_code %>
         </div>
+        <% if @court.phone_number %>
+          <div class="court-phone-number">
+            <%= @court.phone_number %>
+          </div>
+        <% end %>
         <% if @court.website %>
-          <%= link_to "Visit website",  @court.website, target: "_blank" %>
+          <div class="court-website">
+            <%= link_to "Visit website", @court.website, target: "_blank" %>
+          </div>
         <% end %>
       </div>
       <div class="col-md-6">

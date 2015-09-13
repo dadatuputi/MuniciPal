@@ -23,6 +23,12 @@ class Court < ActiveRecord::Base
     super value
   end
 
+  def phone_number=(value)
+    value = value.to_s[/^[^(]*/].strip # remove parenthetical comments
+    value = nil if value == "not listed"
+    super value
+  end
+
   def supports_online_payments?
     online_payment_provider.present?
   end
