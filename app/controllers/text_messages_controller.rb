@@ -137,7 +137,7 @@ class TextMessagesController < ApplicationController
       when "CALLME".downcase
         text = sms_command_callme(sms)
       when "WARRANT".downcase
-        text = sms_command_warrant()
+        text = sms_command_warrant(user)
       else
         firstword = firstword[0,6].concat("...") if firstword.length > 10
         message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
@@ -392,7 +392,7 @@ class TextMessagesController < ApplicationController
     unless user.nil?
       citations = user.citations
       unless citations.nil?
-        citation.violations.each do |violation|
+        citations.violations.each do |violation|
           if violation.warrant?
             warrant = true
           end
