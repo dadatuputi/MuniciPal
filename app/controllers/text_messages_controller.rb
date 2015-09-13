@@ -66,9 +66,12 @@ class TextMessagesController < ApplicationController
 
     r.addSpeak(body3, params3)
 
+    render xml: r.to_s
+    #render text: r.to_s, content_type: :xml
+    #render r.to_s, content_type: "text/xml"
     puts r.to_xml()
-    content_type 'text/xml'
-    return r.to_s()
+    #content_type 'text/xml'
+    #return r.to_s()
   end
 
   # HELPER FUNCTIONS
