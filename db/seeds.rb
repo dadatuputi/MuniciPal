@@ -15,6 +15,23 @@ def announce(message)
   puts "\n\e[34;1m#{message}...\e[0m"
 end
 
+COURTS_THAT_ARENT_IN_MUNICIPAL_COURT_LOCATIONS = [
+  {name: "Bellerive", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Berkeley", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Champ", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "City of St. Louis", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Country Life Acres", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Crystal Lake Park", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Glen Echo Park", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Green Park", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Huntleigh", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Norwood Court", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Twin Oaks", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Westwood", address: nil, zip_code: nil, lat: nil, long: nil},
+  {name: "Wilbur Park", address: nil, zip_code: nil, lat: nil, long: nil}
+].freeze
+
+
 
 
 # Import MunicipalCourtLocations.csv, courts.geojson
@@ -28,8 +45,21 @@ unless skip.member?("courts")
   rows = CSV.read(Rails.root.join("db/MunicipalCourtLocations.csv"), headers: true)
   pbar = ProgressBar.new("progress", rows.count)
   rows.each do |row|
+    municipality = row["Municipali"]
+
+    # !NOTE: These actually have different courthouses, so it is
+    # not right to merge these all into one "Unincorporated" Courthouse!
+    # But we don't have a way of separating the geometry out into the
+    # four quadrants; so we're going to converge them so that we can
+    # show all the geometry for the demo.
+    municipality = "Unincorporated" if municipality == "Unincorporated Central St. Louis County"
+    if ["Unincorporated West St. Louis County", "Unincorporated North St. Louis County", "Unincorporated South St. Louis County"].member?(municipality)
+      pbar.inc
+      next
+    end
+
     Court.create!(
-      name: row["Municipali"],
+      name: municipality,
       address: row["Address"],
       zip_code: row["Zip_Code"],
       lat: row[0], # something weird with the name of the column
@@ -37,6 +67,11 @@ unless skip.member?("courts")
     pbar.inc
   end
   pbar.finish
+
+
+
+  # Manually inserting some records
+  Court.create!(COURTS_THAT_ARENT_IN_MUNICIPAL_COURT_LOCATIONS)
 
 
 
@@ -63,12 +98,31 @@ unless skip.member?("courts")
 
   if unmatched_courts.any?
     unmatched_courts = unmatched_courts.uniq.sort
-    puts "\n\e[34mDidn't find website data for #{unmatched_courts.count} courts in `Municipal Court Websites.csv`:"
+    puts "\n\e[33mSkipping website data for #{unmatched_courts.count} courts that aren't in MunicipalCourtLocations.csv:"
     unmatched_courts.each do |name|
       puts "  #{name}"
     end
     print "\e[0m"
   end
+
+  courts_without_website = Court.where(website: nil).pluck(:name).uniq.sort
+  if courts_without_website.any?
+    puts "\n\e[34mThere are still #{courts_without_website.count} courts that we don't have a website for:"
+    courts_without_website.each do |name|
+      puts "  #{name}"
+    end
+    print "\e[0m"
+  end
+
+  courts_without_phone_number = Court.where(phone_number: nil).pluck(:name).uniq.sort
+  if courts_without_phone_number.any?
+    puts "\n\e[34mThere are still #{courts_without_phone_number.count} courts that we don't have a phone number for:"
+    courts_without_phone_number.each do |name|
+      puts "  #{name}"
+    end
+    print "\e[0m"
+  end
+
 
 
 
@@ -79,7 +133,7 @@ unless skip.member?("courts")
   geometry.each do |feature|
     court = Court.find_by_name feature["properties"]["court_name"]
     if court
-      court.update_attribute :geometry, feature["geometry"]
+      court.add_geometry! feature["geometry"]
     else
       unmatched_courts.push feature["properties"]["court_name"]
     end
@@ -89,7 +143,7 @@ unless skip.member?("courts")
 
   if unmatched_courts.any?
     unmatched_courts = unmatched_courts.uniq.sort
-    puts "\n\e[34mSkipping geometry for #{unmatched_courts.count} courts that we don't have any citations for:"
+    puts "\n\e[33mSkipping geometry for #{unmatched_courts.count} courts that aren't in MunicipalCourtLocations.csv:"
     unmatched_courts.each do |name|
       puts "  #{name}"
     end
