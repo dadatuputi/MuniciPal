@@ -16,7 +16,7 @@
 
           $("#reminder-button").attr("disabled", false)
           form = $("#sms-reminder-form")
-
+          form.find("input[type=tel]").val("")
           if data.ok is "false"
             form.addClass("has-error")
             setTimeout(removeResponseClass, 1500)
