@@ -18,7 +18,7 @@
     map = L.map('map').setView([38.659003, -90.199402], 10)
 
     redirectToCourt = (url, context)->
-      window.location.href = "http://localhost:3000" + String(@)
+      window.location = String(@)
 
     highlightPolygon = (e) ->
       layer = e.target
