@@ -16,22 +16,20 @@ def announce(message)
 end
 
 COURTS_THAT_ARENT_IN_MUNICIPAL_COURT_LOCATIONS = [
-  {name: "Bellerive", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Berkeley", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Champ", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "City of St. Louis", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Country Life Acres", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Crystal Lake Park", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Glen Echo Park", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Green Park", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Huntleigh", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Norwood Court", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Twin Oaks", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Westwood", address: nil, zip_code: nil, lat: nil, long: nil},
-  {name: "Wilbur Park", address: nil, zip_code: nil, lat: nil, long: nil}
+  {name: "Bellerive", address: "7700 Natural Bridge Normandy", website: "http://www.courts.mo.gov/page.jsp?id=8707", zip_code: "63121", lat: -90.2908532, long: 38.6986447},
+  {name: "Berkeley", address: "8425 Airport Road", website: "http://www.cityofberkeley.us/index.aspx?NID=124", zip_code: "63134", lat: -90.3305343, long: 38.7504723},
+  {name: "Champ", address: nil, website: "https://en.wikipedia.org/wiki/Champ,_Missouri", zip_code: nil, lat: nil, long: nil},
+  {name: "City of St. Louis", website: "http://www.stlcitycourt.org/frmHome.aspx", address: "1520 Market Street", zip_code: "63103", lat: -90.2032245, long: 38.6282597},
+  {name: "Country Life Acres", address: "3 Hollenberg Ct.", zip_code: "63044", lat: 38.7531038, long: -90.4416799},
+  {name: "Crystal Lake Park", address: "10555 Clayton Road", zip_code: "63131", website: "http://www.courts.mo.gov/page.jsp?id=9399", lat: -90.4121232, long: 38.6338913},
+  {name: "Glen Echo Park", address: "7206 Henderson Avenue", zip_code: "63121", lat: -90.294752, long: 38.699572},
+  {name: "Green Park", address: "11100 Mueller Rd., Suite 6", website: "http://www.stlouisco.com/YourGovernment/Municipalities/SouthCounty/GreenPark", zip_code: "63123", lat: -90.3455605, long: 38.5226969},
+  {name: "Huntleigh", address: "600 Washington Ave, Fl 15", zip_code: "63101", website: "https://www.stlouisco.com/YourGovernment/Municipalities/MidCounty/Huntleigh" ,lat: -90.1898815, long: 38.6296495},
+  {name: "Norwood Court", address: "250 North Boulden Avenue", zip_code: "65717", website: "http://www.courts.mo.gov/page.jsp?id=9715", lat: -92.4145246, long: 37.1088043},
+  {name: "Twin Oaks", address: "1393 Big Bend Road, Suite F", zip_code: "63021", website: "http://www.vil.twin-oaks.mo.us/", lat: -90.4983795, long: 38.5694792},
+  {name: "Westwood", address: "7700 Bonhomme Ave.", zip_code: "63105", website: "https://www.stlouisco.com/YourGovernment/Municipalities/WestCounty/Westwood", lat: -90.335175, long: 38.647037},
+  {name: "Wilbur Park", address: "9036 Rosemary Ave", zip_code: "63123", website: "http://www.villageofwilburpark.com/", lat: -90.307501, long: 38.554451}
 ].freeze
-
-
 
 
 # Import MunicipalCourtLocations.csv, courts.geojson
