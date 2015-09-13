@@ -34,4 +34,10 @@ class WalkthroughController < ApplicationController
     @today = Date.today
   end
 
+  def court
+    @court = Court.find params[:id]
+    @today = Date.today
+    render action: :citation
+  end
+
 end
