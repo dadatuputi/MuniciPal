@@ -1,0 +1,13 @@
+@media print {
+  body {
+    margin: 0;
+    font-size: 15px;
+  }
+  .btn { display: none; }
+  #street_view { display: none; }
+  .dont-print { display: none; }
+  .print-no-margin { margin-top: 0 !important; }
+  section { margin-top: 2em !important; margin-bottom: 2em !important; }
+  .callout { padding: 0 !important; background: none !important; }
+  .col-md-6 { margin-bottom: 0 !important; }
+}

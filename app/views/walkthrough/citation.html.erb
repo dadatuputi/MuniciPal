@@ -74,7 +74,7 @@
         <div class="callout callout-primary">
           <h3>Pay your citation online</h3>
           <div class="buttons">
-            <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
+            <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary dont-print", target: "_blank" %>
           </div>
           <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
         </div>
@@ -124,7 +124,7 @@
       <h2>What to expect on your court date</h2>
       <div class="container-fluid">
         <div class="col-md-6">
-          <h3><%= @court.name %></h3>
+          <h3 class="print-no-margin"><%= @court.name %></h3>
           <div class="court-address">
             <%= @court.address %><br />
             St Louis, MO <%= @court.zip_code %>
@@ -146,7 +146,7 @@
       </div>
 
       <% if @citation %> 
-        <div class="callout callout-primary">
+        <div class="callout callout-primary dont-print">
           <h3>Send me a reminder </h3>
 
           <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
