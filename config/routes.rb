@@ -4,12 +4,12 @@ Rails.application.routes.draw do
   # The Web application                                                         #
   # --------------------------------------------------------------------------- #
 
-  root 'walkthrough#index'
+  root "walkthrough#index"
 
   scope "walkthrough" do
-    get 'court/:id' => "walkthrough#court", as: :court
-    get 'citation/:id'=> "walkthrough#citation", as: :citation
-    get 'person/:id' => "walkthrough#person", as: :person
+    get "court/:id" => "walkthrough#court", as: :court
+    get "citation/:id"=> "walkthrough#citation", as: :citation
+    get "person/:id" => "walkthrough#person", as: :person
     post "search" => "walkthrough#search"
   end
 
@@ -28,6 +28,5 @@ Rails.application.routes.draw do
   post "texts/callback" => "text_messages#callback"
   post "texts/send_reminder" => "text_messages#send_reminder"
   get "geodata/muny" => "geo_data#municipalities"
-  post "court/feedback" => "court#feedback"
 
 end
