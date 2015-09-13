@@ -1,11 +1,11 @@
 class GeoDataController < ApplicationController
   def municipalities
-    munies = Court.where.not(geometry: nil).map do |court|
-                { type: "Feature",
-                  properties: {url: court_path(court), popupContent: court.name},
-                  geometry: court.geometry
-                }
-            end
-    render json: munies
+    munies = Court.where.not(geometry: nil).pluck(:id, :name, :geometry).map { |id, name, geometry|
+      { "type" => "Feature",
+        "properties" => {"url" => court_path(id: id), "popupContent" => name},
+        "geometry" => geometry } }
+
+    json = Court.benchmark("render json") { Oj.dump(munies) }
+    render json: json
   end
 end
