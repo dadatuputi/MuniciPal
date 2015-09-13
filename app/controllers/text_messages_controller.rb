@@ -42,27 +42,49 @@ class TextMessagesController < ApplicationController
 
   # HELPER FUNCTIONS
   def sms_controller(sms)
-    # TODO Identify user
-    user = Person.file_by(phone_number: sms.from)
-
     # Get Command from message
     words = sms.text.split
     words.nil? ? firstword="HELP" : firstword = words[0]
-    # Route commands
-    case firstword
-    when "HELLO".downcase
-      text = sms_command_hello(user)
-    when "HELP".downcase
-      text = sms_command_help(user)
-    when "STOP".downcase
-      text = sms_command_stop(user)
-    when "STATUS".downcase
-      text = sms_command_status(user)
-    when "CALLME".downcase
-      text = sms_command_callme(sms, user)
+
+    # Identify user
+    byebug if Rails.env.development?
+    user = Person.file_by(phone_number: sms.from)
+
+    # State Machine
+    if user.nil?
+      # Anon state
+      case firstword
+      when "HELP".downcase
+        text = sms_command_help("", user)
+      when "HELLO".downcase
+        text = sms_command_hello(user)
+      when "STOP".downcase
+        text = sms_command_stop(user)
+      else
+        firstword = firstword[0,6].concat("...") if firstword.length > 10
+        message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
+        text = sms_command_help(message, user)
+      end
     else
-      firstword = firstword[0,6].concat("...") if firstword.length > 10
-      text = sms_command_help("#{firstword} is an unknown command.\n\n", user)
+      # Auth state
+      case firstword
+      when "HELP".downcase
+        text = sms_command_help("", user)
+      when "HELLO".downcase
+        text = sms_command_hello(user)
+      when "STOP".downcase
+        text = sms_command_stop(user)
+      when "LIST".downcase
+        text = sms_command_list(user)
+      when "DETAIL".downcase
+        text = sms_command_detail("", user, words)
+      when "CALLME".downcase
+        text = sms_command_callme(sms, user, words)
+      else
+        firstword = firstword[0,6].concat("...") if firstword.length > 10
+        message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
+        text = sms_command_help(message, user)
+      end
     end
 
     # Send response
@@ -72,32 +94,118 @@ class TextMessagesController < ApplicationController
   end
 
   # COMMAND FUNCTIONS
-  def sms_command_help(message="")
+  def sms_command_help(message="", user)
     # Build Help Output
     message.concat("Available commands:\n")
+
+    if user.nil?
+      commands = COMMANDS_ANON
+    else
+      commands = COMMANDS_AUTH
+    end
+
     COMMANDS_ANON.each {|command, description| message.concat("#{command}: #{description}\n") }
+
     message
   end
 
-  def sms_command_hello(message="")
-    # TODO Build Hello response - use guide
-    message.concat(HELLO_WELCOME)
+  def sms_command_hello(user)
+    # Restart walkthrough
+    user_stop(user) if !user.nil?
+
+    HELLO_WELCOME
+  end
+
+  def sms_command_stop(user)
+    # Stop tracking user
+    user_stop(user) if !user.nil?
+
+    STOP_RESPONSE
+  end
+
+  def sms_command_list(user)
+    # List all citations
+    citations = citations_sort(user)
+
+    if (citations.count < 1)
+      # No citations. Show messages
+       return LIST_EMPTY
+    elsif (citations.count = 1)
+      # One citation. Show detail
+      sms_command_detail(LIST_ONE, user, nil)
+    else
+      # Many citations. Show list
+      message = ""
+      # Iterate through each citation
+      citations.each_with_index do |citation, index|
+        warrant = false
+        # Go through each citation and if one has a warrant, set flag
+        citation.violations.each do |violation|
+          warrant = violation.warrant?
+        end
+        # Generate lines
+        message.concat("#{index}:")
+        message.concat(" #{WARRANT_FLAG}") if warrant
+        message.concat(" #{citation.citation_number}")
+        message.concat(" #{citation.citation_date}")
+      end
+    end
+
     message
   end
 
-  def sms_command_stop(message="")
-    # TODO Stop tracking user
-    message.concat(STOP_RESPONSE)
-    message
+  def sms_command_detail(message = "", user, words)
+    citation = nil
+
+    if  words.nil?
+      # Words is nil when we only have a single citation
+      citation = user.citations.first
+    elsif words.length > 0 && words[1].to_i(10) > 10
+      # Make sure we have a valid number
+      number = words[1].to_i(10)
+      citations = citations_sort(user)
+      citation = citations[number] if number < citations.length && number >= 0
+    end
+    byebug if Rails.env.development?
+or
+      message.concat(DETAIL_INVALID).concat(citations.length-1)
+    else
+      # Let's give the people what they want
+      # Build violations first
+      warrant = false
+      violations = ""
+      # Go through each citation and if one has a warrant, set flag
+      citation.violations.each_with_index do |violation, index|
+        warrant = violation.warrant?
+        violations.concat(VIOLATION_SHORT).concat(index).concat(": ")
+        violations.concat(WARRANT_FLAG_SHORT).concat(" ")
+        description = violation.violation_description[0,11].concat("...") if violation.violation_description.length > 15
+        violations.concat(description).concat(" ")
+        unless violation.fine_amount.nil?
+          violations.concat(violation.fine_amount).concat(" ").concat(FINE_SHORT).concat(" ")
+          unless violation.court_amount.nil?
+            violations.concat(violation.court_amount).concat(" ").concat(FINE_SHORT).concat(" ")
+          end
+        end
+        violations.concat("\n")
+      end
+
+      # Put details all together.
+      message.concat(WARRANT_FLAG).concat("\n") if warrant
+      message.concat(CITATION_SHORT).conctat(citation.citation_number).concat(":").concat()
+      message.concat("-").concat(citation.status_date) unless citation.status_date.nil
+      message
+    end
   end
 
-  def sms_command_status(message="")
-    # TODO Show current user's status
-    message.concat(STATUS_NONE)
-    #messageif (state.)
+  def citations_sort(user)
+    citations = user.citations
+    citations.sort { |a,b| a.violations.any? { |violation| if violation.warrant? 1 else 0 end } - b.violations.any? { |violation| if violation.warrant? 1 else 0 end }}
+    return citations
   end
 
   def sms_send(sms)
+    byebug if Rails.env.development?
     p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
     # Send SMS
@@ -123,17 +231,14 @@ class TextMessagesController < ApplicationController
       p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
       params = {
-          'to' => sms.from, # The phone number to which the call has to be placed
-          'from' => sms.to, # The phone number to be used as the caller id
-          'answer_url' => 'https://municipal-app.herokuapp.com/texts/callback', # The URL invoked by Plivo when the outbound call is answered
-          'answer_method' => 'GET', # The method used to call the answer_url
-          # Example for Asynchrnous request
-          #'callback_url' => "https://enigmatic-cove-3140.herokuapp.com/callback", # The URL notified by the API response is available and to which the response is sent.
-          #'callback_method' => "GET" # The method used to notify the callback_url.
-      }
-
-      # Make an outbound call
-      response = p.make_call(params)
+      response = p.make_call(para        firstword = firstword[0,6].concat("...") if firstword.length > 10
+ms)
+    end      when "STATUS".downcase
+        text = sms_command_status(user)
+      if !user.nil?
+        user.phone_number = nil
+        user.save
+      end
     end
   end
 
@@ -147,14 +252,24 @@ class TextMessagesController < ApplicationController
   COMMANDS_AUTH = {
     "HELP" => "List commands.",
     "HELLO" => "Restart walkthrough.",
-    "STOP" => "Stop receiving ".concat(APP_NAME).concat(" msgs & close session."),
+    "STOP" => "Stop receiving ".concat(APP_NAME).concat(" msgs."),
     "LIST" => "List citations.",
-    "DETAIL #" => "Show detail",
-    "CALLME" => "Call you back with information.",
+    "DETAIL #" => "Show details",
+    "COURT #" => "Show court details",
+    "CALLME" => "Call you back with info.",
   }.freeze
-  HELLO_WELCOME = "Welcome to #{APP_NAME}\n\nTo get started send us a citation number or drivers license number."
+  HELLO_WELCOME = "Welcome to #{APP_NAME}\n\nTo get started, send us a citation number or drivers license number."
   STOP_RESPONSE = "You will no longer receive messages from #{APP_NAME}"
   STATUS_NONE = "You haven't started a session. Say HELLO to begin walkthrough."
-
+  LIST_EMPTY = "No known citations."
+  LIST_ONE = "One citation. Showing details:\n"
+  WARRANT_FLAG = "!WARRANT!"
+  WARRANT_FLAG_SHORT = "!W!"
+  DETAIL_INVALID = "Please enter a valid citation number.\n\nFor example, send DETAIL "
+  VIOLATION_SHORT = "V"
+  CITATION_SHORT = "C"
+  FINE_SHORT = "(f)"
+  FINE_COURT_SHORT = "(c)"
+  COMMAND_UNKNOWN = " is an unknown command."
 
 end
