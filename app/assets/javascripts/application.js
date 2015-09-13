@@ -15,4 +15,5 @@
 //= require bootstrap-sprockets
 //= require leaflet
 //= require gmaps
+//= require mousetrap
 //= require_tree .

@@ -203,3 +203,8 @@ unless skip.member?("violations")
   end
   pbar.finish
 end
+
+
+
+# Change Martin's name to Patricia
+Person.where(drivers_license_number: "M718460675").update_all(first_name: "Patricia", last_name: "Rivera")
