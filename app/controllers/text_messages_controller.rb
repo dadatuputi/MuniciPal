@@ -38,40 +38,47 @@ class TextMessagesController < ApplicationController
 
   def callback
     # TODO callback with overview message
-    puts params
     r = Response.new()
 
     # Build Body
+    phone_number = params["To"]
+    user = Person.find_by(phone_number: phone_number)
 
-    # English Text
-    body1 = 'This is a randomly generated text can be used in your layout'
-    params1 = {
-        'language'=> "en-GB",
-        'voice' => "WOMAN"
-    }
+    unless user.nil?
+      # English Text
+      body1 = ""
+      body1.concat("Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name).concat(".")
+      # Warrant
+      citations = user.citations
+      warrant = has_warrant(user)
+      body1.concat("Attention! You have an arrest warrant issued to you. Please call 800-200-1337 for free assistance in resolving this issue.") if warrant
+      # Citations
+      number_citations = 0
+      number_citations = citations.length unless number_citations.nil?
+      body1.concat("You have ").concat(number_citations.to_s).concat(" citations.")
+      body1.concat(WARRANT_HELP_BOILERPLATE) if warrant
 
-    r.addSpeak(body1, params1)
+      params1 = {
+          'language'=> "en-GB",
+          'voice' => "WOMAN"
+      }
+      r.addSpeak(body1, params1)
+    end
+
+
 
     # French Text
-    body2 = 'Ce texte généré aléatoirement peut-être utilisé dans vos maquettes'
-    params2 = {
-        'language' => "fr-FR"
-    }
+    #body2 = 'Ce texte généré aléatoirement peut-être utilisé dans vos maquettes'
+    #params2 = {
+    #    'language' => "fr-FR"
+    #}
 
-    r.addSpeak(body2, params2)
-
-    #Russian Text
-    body3 = 'Это случайно сгенерированный текст может быть использован в макете'
-    params3 = {
-        'language' => "ru-RU",
-    }
-
-    r.addSpeak(body3, params3)
+    #r.addSpeak(body2, params2)
 
     render xml: r.to_s
     #render text: r.to_s, content_type: :xml
     #render r.to_s, content_type: "text/xml"
-    puts r.to_xml()
+    #puts r.to_xml()
     #content_type 'text/xml'
     #return r.to_s()
   end
@@ -129,6 +136,8 @@ class TextMessagesController < ApplicationController
         text = sms_command_court(user, words)
       when "CALLME".downcase
         text = sms_command_callme(sms)
+      when "WARRANT".downcase
+        text = sms_command_warrant()
       else
         firstword = firstword[0,6].concat("...") if firstword.length > 10
         message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
@@ -228,7 +237,7 @@ class TextMessagesController < ApplicationController
         warrant = violation.warrant?
         violations.concat(VIOLATION_SHORT).concat((index+1).to_s).concat(": ")
         violations.concat(WARRANT_FLAG_SHORT).concat(" ") if warrant
-        description = violation.violation_description[0,11].concat("...") if violation.violation_description.length > 15
+        description = violation.violation_description[0,29].concat("...") if violation.violation_description.length > 30
         violations.concat(description).concat(" ")
         unless violation.fine_amount.nil?
           violations.concat(number_to_currency(violation.fine_amount)).concat(FINE_SHORT).concat(" ")
@@ -292,6 +301,18 @@ class TextMessagesController < ApplicationController
 
     # Make an outbound call
     response = p.make_call(params)
+  end
+
+  def sms_command_warrant(user)
+    message = ""
+    unless user.nil?
+      if has_warrant(user)
+        message.concat("You have a warrant issued for your arrest. ").concat(WARRANT_HELP_BOILERPLATE)
+      else
+        message.concat(WARRANT_HELP_HAS_NOT)
+      end
+    end
+    message
   end
 
   def lookup_citation(user, words)
@@ -366,6 +387,21 @@ class TextMessagesController < ApplicationController
     response
   end
 
+  def has_warrant(user)
+    warrant = false
+    unless user.nil?
+      citations = user.citations
+      unless citations.nil?
+        citation.violations.each do |violation|
+          if violation.warrant?
+            warrant = true
+          end
+        end
+      end
+    end
+    return warrant
+  end
+
   def user_stop(user)
     if !user.nil?
         user.phone_number = nil
@@ -388,6 +424,7 @@ class TextMessagesController < ApplicationController
     "DETAIL #" => "Show details",
     "COURT #" => "Show court details",
     "CALLME" => "Call you back with info.",
+    "WARRANT" => "Get warrant help.",
   }.freeze
   HELLO_WELCOME = "Welcome to #{APP_NAME}!\n\nTo get started, send a citation number, drivers license number or name and date of birth."
   STOP_RESPONSE = "You will no longer receive messages from #{APP_NAME}"
@@ -404,5 +441,7 @@ class TextMessagesController < ApplicationController
   FINE_COURT_SHORT = "(c)"
   COMMAND_UNKNOWN = " is an unknown command."
   COMMAND_UNKNOWN_ANON = " is an unkown command, citation, license number or user."
+  WARRANT_HELP_BOILERPLATE = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court.  The court might be willing to schedule a hearing or mitigate the jail time."
+  WARRANT_HELP_HAS_NOT = "We can't find any warrants for you. " + WARRANT_HELP_BOILERPLATE
 
 end
