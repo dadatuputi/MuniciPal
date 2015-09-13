@@ -222,6 +222,7 @@ class TextMessagesController < ApplicationController
       message.concat(WARRANT_FLAG).concat("\n") if warrant_overall
       citations.length > 1? message.concat("Open Citations:\n\n") : message.concat("Open Citation:\n\n")
       message.concat(citation_message)
+      message.concat("\n\n").concat(WARRANT_FLAG_SHORT).concat(WARRANT_FLAG_SHORT_DEFINITION) if warrant_overall
     end
 
     message
@@ -256,6 +257,7 @@ class TextMessagesController < ApplicationController
       message.concat(CITATION_LONG).concat(" ").concat(citation.citation_number).concat(":")
       message.concat("-").concat(citation.citation_date.to_s) unless citation.citation_date.nil?
       message.concat("\n\n").concat(violations)
+      message.concat("\n\n").concat(WARRANT_FLAG_SHORT).concat(WARRANT_FLAG_SHORT_DEFINITION) if warrant
       message
     else
       return message.concat(DETAIL_INVALID).concat("1")
@@ -272,7 +274,7 @@ class TextMessagesController < ApplicationController
       # Let's give the people what they want
       # Court Details
       message.concat("Court: ").concat(court.name).concat("\n\n")
-      message.concat("Call: ").concat(court.phone_number).concat("\n") unless court.phone_number.nil?
+      message.concat(court.phone_number).concat("\n") unless court.phone_number.nil?
       unless court.address.nil?
         message.concat(court.address) unless court.address.nil?
         unless court.zip_code.nil?
@@ -280,7 +282,7 @@ class TextMessagesController < ApplicationController
         end
         message.concat("\n")
       end
-      message.concat("Pay Online? ").concat("Y:").concat(court.online_payment_provider).concat("\n") unless court.online_payment_provider.nil?
+      message.concat("Can pay fines online.\n") unless court.online_payment_provider.nil?
       message.concat("Website: ").concat(court.website) unless court.website.nil?
       message
     else
@@ -434,8 +436,9 @@ class TextMessagesController < ApplicationController
   STATUS_NONE = "You haven't started a session. Say HELLO to begin walkthrough."
   LIST_EMPTY = "No known citations."
   LIST_ONE = "One citation. Showing details:\n"
-  WARRANT_FLAG = "!WARRANT!"
+  WARRANT_FLAG = "YOU HAVE A WARRANT"
   WARRANT_FLAG_SHORT = "!W!"
+  WARRANT_FLAG_SHORT_DEFINITION = "=warrant"
   DETAIL_INVALID = "Please enter a valid citation number.\n\nFor example, send DETAIL "
   VIOLATION_SHORT = "V"
   CITATION_SHORT = "C"
