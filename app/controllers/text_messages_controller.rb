@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'plivo'
 include Plivo
+include ActionView::Helpers::NumberHelper
 
 AUTH_ID = "MANJYWOTGZN2UZN2VKZG"
 AUTH_TOKEN = "NGE0NDRmNDcyMWIyZWY4ZTY1Y2NiOWEwZGRlYjNi"
@@ -22,7 +23,6 @@ class TextMessagesController < ApplicationController
   end
 
   def receive
-    byebug if Rails.env.development?
     sms = SMS.new(params["To"], params["From"], params["Text"])
     return head :bad_request if !sms.valid?
 
@@ -38,6 +38,37 @@ class TextMessagesController < ApplicationController
 
   def callback
     # TODO callback with overview message
+
+    r = Response.new()
+
+    # English Text
+    body1 = 'This is a randomly generated text can be used in your layout'
+    params1 = {
+        'language'=> "en-GB",
+        'voice' => "MAN"
+    }
+
+    r.addSpeak(body1, params1)
+
+    # French Text
+    body2 = 'Ce texte généré aléatoirement peut-être utilisé dans vos maquettes'
+    params2 = {
+        'language' => "fr-FR"
+    }
+
+    r.addSpeak(body2, params2)
+
+    #Russian Text
+    body3 = 'Это случайно сгенерированный текст может быть использован в макете'
+    params3 = {
+        'language' => "ru-RU",
+    }
+
+    r.addSpeak(body3, params3)
+
+    puts r.to_xml()
+    content_type 'text/xml'
+    return r.to_s()
   end
 
   # HELPER FUNCTIONS
@@ -47,27 +78,38 @@ class TextMessagesController < ApplicationController
     words.nil? ? firstword="HELP" : firstword = words[0]
 
     # Identify user
+    user = Person.find_by(phone_number: sms.from.to_s)
+    #Q526993883
     byebug if Rails.env.development?
-    user = Person.file_by(phone_number: sms.from)
 
     # State Machine
     if user.nil?
       # Anon state
-      case firstword
+      case firstword.downcase
       when "HELP".downcase
-        text = sms_command_help("", user)
+        text = sms_command_help
       when "HELLO".downcase
-        text = sms_command_hello(user)
+        text = sms_command_hello
       when "STOP".downcase
-        text = sms_command_stop(user)
+        text = sms_command_stop
       else
-        firstword = firstword[0,6].concat("...") if firstword.length > 10
-        message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
-        text = sms_command_help(message, user)
+        # Try to look up user given provided data
+        user = lookup_user(sms, words)
+
+        if user.nil?
+          # Bad command
+          firstword = firstword[0,6].concat("...") if firstword.length > 10
+          message = "#{firstword}".concat(COMMAND_UNKNOWN_ANON).concat("\n\n")
+          text = sms_command_help(message, user)
+        else
+          # Found user!
+          text = "Welcome #{user.first_name} #{user.last_name}.\n\n"
+          text.concat(sms_command_list(user))
+        end
       end
     else
       # Auth state
-      case firstword
+      case firstword.downcase
       when "HELP".downcase
         text = sms_command_help("", user)
       when "HELLO".downcase
@@ -78,6 +120,8 @@ class TextMessagesController < ApplicationController
         text = sms_command_list(user)
       when "DETAIL".downcase
         text = sms_command_detail("", user, words)
+      when "COURT".downcase
+        text = sms_command_court(user, words)
       when "CALLME".downcase
         text = sms_command_callme(sms, user, words)
       else
@@ -94,7 +138,7 @@ class TextMessagesController < ApplicationController
   end
 
   # COMMAND FUNCTIONS
-  def sms_command_help(message="", user)
+  def sms_command_help(message="", user=nil)
     # Build Help Output
     message.concat("Available commands:\n")
 
@@ -109,14 +153,14 @@ class TextMessagesController < ApplicationController
     message
   end
 
-  def sms_command_hello(user)
+  def sms_command_hello(user=nil)
     # Restart walkthrough
     user_stop(user) if !user.nil?
 
     HELLO_WELCOME
   end
 
-  def sms_command_stop(user)
+  def sms_command_stop(user=nil)
     # Stop tracking user
     user_stop(user) if !user.nil?
 
@@ -129,47 +173,47 @@ class TextMessagesController < ApplicationController
 
     if (citations.count < 1)
       # No citations. Show messages
-       return LIST_EMPTY
-    elsif (citations.count = 1)
+      return LIST_EMPTY
+    elsif (citations.count == 1)
       # One citation. Show detail
-      sms_command_detail(LIST_ONE, user, nil)
+      return sms_command_detail(LIST_ONE, user, nil)
     else
       # Many citations. Show list
-      message = ""
+
+      # Build Citation List First
+      citation_message = ""
+      warrant_overall = false
       # Iterate through each citation
       citations.each_with_index do |citation, index|
         warrant = false
         # Go through each citation and if one has a warrant, set flag
         citation.violations.each do |violation|
-          warrant = violation.warrant?
+          if violation.warrant?
+            warrant = true
+            warrant_overall = true
+          end
         end
         # Generate lines
-        message.concat("#{index}:")
-        message.concat(" #{WARRANT_FLAG}") if warrant
-        message.concat(" #{citation.citation_number}")
-        message.concat(" #{citation.citation_date}")
+        citation_message.concat("#{index+1}:")
+        citation_message.concat(" #{WARRANT_FLAG_SHORT}") if warrant
+        citation_message.concat(" #{citation.citation_number}")
+        citation_message.concat(" #{citation.citation_date}")
+        citation_message.concat("\n")
       end
+
+      message = ""
+      message.concat(WARRANT_FLAG).concat("\n") if warrant_overall
+      citations.length > 1? message.concat("Open Citations:\n\n") : message.concat("Open Citation:\n\n")
+      message.concat(citation_message)
     end
 
     message
   end
 
   def sms_command_detail(message = "", user, words)
-    citation = nil
+    citation = lookup_citation(user, words)
 
-    if  words.nil?
-      # Words is nil when we only have a single citation
-      citation = user.citations.first
-    elsif words.length > 0 && words[1].to_i(10) > 10
-      # Make sure we have a valid number
-      number = words[1].to_i(10)
-      citations = citations_sort(user)
-      citation = citations[number] if number < citations.length && number >= 0
-    end
-    byebug if Rails.env.development?
-or
-      message.concat(DETAIL_INVALID).concat(citations.length-1)
-    else
+    unless citation.nil?
       # Let's give the people what they want
       # Build violations first
       warrant = false
@@ -178,13 +222,13 @@ or
       citation.violations.each_with_index do |violation, index|
         warrant = violation.warrant?
         violations.concat(VIOLATION_SHORT).concat(index).concat(": ")
-        violations.concat(WARRANT_FLAG_SHORT).concat(" ")
+        violations.concat(WARRANT_FLAG_SHORT).concat(" ") if warrant
         description = violation.violation_description[0,11].concat("...") if violation.violation_description.length > 15
         violations.concat(description).concat(" ")
         unless violation.fine_amount.nil?
-          violations.concat(violation.fine_amount).concat(" ").concat(FINE_SHORT).concat(" ")
-          unless violation.court_amount.nil?
-            violations.concat(violation.court_amount).concat(" ").concat(FINE_SHORT).concat(" ")
+          violations.concat(number_to_currency(violation.fine_amount)).concat(FINE_SHORT).concat(" ")
+          unless violation.court_cost.nil?
+            violations.concat(number_to_currency(violation.court_cost)).concat(FINE_COURT_SHORT).concat(" ")
           end
         end
         violations.concat("\n")
@@ -192,16 +236,111 @@ or
 
       # Put details all together.
       message.concat(WARRANT_FLAG).concat("\n") if warrant
-      message.concat(CITATION_SHORT).conctat(citation.citation_number).concat(":").concat()
-      message.concat("-").concat(citation.status_date) unless citation.status_date.nil
+      message.concat(CITATION_LONG).concat(" ").concat(citation.citation_number).concat(":")
+      message.concat("-").concat(citation.citation_date) unless citation.citation_date.nil?
+      message.concat("\n\n").concat(violations)
       message
+    else
+      return message.concat(DETAIL_INVALID).concat(1)
+    end
+  end
+
+  def sms_command_court(user, words)
+    citation = lookup_citation(user, words)
+    court = nil
+    court = citation.court unless citation.nil?
+    message = ""
+
+    unless court.nil?
+      # Let's give the people what they want
+      # Court Details
+      message.concat("Court: ").concat(court.name).concat("\n\n")
+      message.concat("Call: ").concat(court.phone_number).concat("\n") unless court.phone_number.nil?
+      unless court.address.nil?
+        message.concat(court.address) unless court.address.nil?
+        unless court.zip_code.nil?
+          message.concat(" ").concat(court.zip_code)
+        end
+        message.concat("\n")
+      end
+      message.concat("Pay Online? ").concat("Y:").concat(court.online_payment_provider).concat("\n") unless court.online_payment_provider.nil?
+      message.concat("Website: ").concat(court.municipal_website) unless court.municipal_website.nil?
+      message
+    else
+      return message.concat(DETAIL_INVALID).concat(1)
+    end
+  end
+
+  def sms_command_callme(sms, user)
+    unless user.nil?
+
+      p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
+
+      params = {
+          'to' => sms.from, # The phone number to which the call has to be placed
+          'from' => sms.to, # The phone number to be used as the caller id
+          'answer_url' => 'https://municipal-app.herokuapp.com/texts/callback', # The URL invoked by Plivo when the outbound call is answered
+          'answer_method' => 'GET', # The method used to call the answer_url
+          # Example for Asynchrnous request
+          #'callback_url' => "https://enigmatic-cove-3140.herokuapp.com/callback", # The URL notified by the API response is available and to which the response is sent.
+          #'callback_method' => "GET" # The method used to notify the callback_url.
+      }
+
+      # Make an outbound call
+      response = p.make_call(params)
+  end
+
+  def lookup_citation(user, words)
+    citation = nil
+
+    if  words.nil?
+      # Words is nil when we only have a single citation
+      citation = user.citations.first
+    elsif words.length > 1 && words[1].to_i(10) > 0
+      # Make sure we have a valid number
+      number = words[1].to_i(10)
+      citations = citations_sort(user)
+
+      unless citations.nil? || number >= citations.length
+        citation = citations[number]
+      end
+    end
+
+    return citation
+  end
+
+  def lookup_user(sms, words)
+    # First check for valid words
+    return nil if words.nil? || words.length < 1
+
+    user = nil
+    byebug if Rails.env.development?
+
+    if words[0].length == 10
+      # Try driver's license
+      user = Person.find_by(drivers_license_number: words[0])
+    elsif user.nil? && words[0].length >= 6 && words[0].length <= 9
+      # Try citation number
+      citation = Citatation.find_by(citation_number: words[0])
+      user = citation.person unless citation.nil?
+    elsif user.nil?
+      # Try name and date of birth
+      return nil unless words[0].length >= 3
+
+      # Search for user based on their supplied parameters
+      user = Person.find_by(first_name: words[0], last_name: words[1], date_of_birth: words[2])
+    end
+
+    unless user.nil?
+      # Put phone number in user
+      user.phone_number = sms.from
+      user.save
+      return user
     end
   end
 
   def citations_sort(user)
-    citations = user.citations
-    citations.sort { |a,b| a.violations.any? { |violation| if violation.warrant? 1 else 0 end } - b.violations.any? { |violation| if violation.warrant? 1 else 0 end }}
-    return citations
+    return user.citations
   end
 
   def sms_send(sms)
@@ -223,22 +362,10 @@ or
     response
   end
 
-
-  def sms_command_callme(sms, user)
-    if user.nil?
-      return ""
-    else
-      p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
-
-      params = {
-      response = p.make_call(para        firstword = firstword[0,6].concat("...") if firstword.length > 10
-ms)
-    end      when "STATUS".downcase
-        text = sms_command_status(user)
-      if !user.nil?
+  def user_stop(user)
+    if !user.nil?
         user.phone_number = nil
         user.save
-      end
     end
   end
 
@@ -258,7 +385,7 @@ ms)
     "COURT #" => "Show court details",
     "CALLME" => "Call you back with info.",
   }.freeze
-  HELLO_WELCOME = "Welcome to #{APP_NAME}\n\nTo get started, send us a citation number or drivers license number."
+  HELLO_WELCOME = "Welcome to #{APP_NAME}!\n\nTo get started, send a citation number, drivers license number or name and date of birth."
   STOP_RESPONSE = "You will no longer receive messages from #{APP_NAME}"
   STATUS_NONE = "You haven't started a session. Say HELLO to begin walkthrough."
   LIST_EMPTY = "No known citations."
@@ -268,8 +395,10 @@ ms)
   DETAIL_INVALID = "Please enter a valid citation number.\n\nFor example, send DETAIL "
   VIOLATION_SHORT = "V"
   CITATION_SHORT = "C"
+  CITATION_LONG = "Citation"
   FINE_SHORT = "(f)"
   FINE_COURT_SHORT = "(c)"
   COMMAND_UNKNOWN = " is an unknown command."
+  COMMAND_UNKNOWN_ANON = " is an unkown command, citation, license number or user."
 
 end
