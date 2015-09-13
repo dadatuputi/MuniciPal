@@ -69,34 +69,36 @@
 
     <h2>What should I do now?</h2>
 
-    <% if @court.supports_online_payments? %>
-      <div class="callout callout-primary">
-        <h3>Pay your citation online</h3>
-        <div class="buttons">
-          <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
+    <% if @court %>
+      <% if @court.supports_online_payments? %>
+        <div class="callout callout-primary">
+          <h3>Pay your citation online</h3>
+          <div class="buttons">
+            <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
+          </div>
+          <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
         </div>
-        <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
-      </div>
-    <% else %>
-      <div class="callout callout-disabled <% unless @court.phone_number %>callout-no-action<% end %>">
-        <h3>Pay your citation via phone</h3>
-        <% if @court.phone_number %>
-        <div class="buttons">
-          <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
+      <% else %>
+        <div class="callout callout-disabled <% unless @court.phone_number %>callout-no-action<% end %>">
+          <h3>Pay your citation via phone</h3>
+          <% if @court.phone_number %>
+          <div class="buttons">
+            <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
+          </div>
+          <% end %>
+          <%= @court.name %> does not support online payments; but you may still be able to pay your citation today by calling the courthouse.
         </div>
-        <% end %>
-        <%= @court.name %> does not support online payments; but you may still be able to pay your citation today by calling the courthouse.
-      </div>
-    <% end %>
+      <% end %>
 
-    <% if @court.supports_community_service_for?(@citation) %>
-      <div class="callout callout-sunny">
-        <h3>Community service</h3>
-        <div class="buttons">
-          <%= link_to "Find approved service organizations", nil, class: "btn btn-lg btn-warning" %>
+      <% if @court.supports_community_service_for?(@citation) %>
+        <div class="callout callout-sunny">
+          <h3>Community service</h3>
+          <div class="buttons">
+            <%= link_to "Find approved service organizations", nil, class: "btn btn-lg btn-warning" %>
+          </div>
+          <%= @court.name %> may allow you to pay these fees with community service.
         </div>
-        <%= @court.name %> may allow you to pay these fees with community service.
-      </div>
+      <% end %>
     <% end %>
 
     <div class="callout callout-naked">
@@ -170,13 +172,15 @@
   <% end %>
 </div>
 
-<script type="text/javascript">
-  $(function() {
-    panorama = GMaps.createPanorama({
-      el: '#street_view',
-      lat : <%= @court.long %>,
-      lng : <%= @court.lat %>
+<% if @court %>
+  <script type="text/javascript">
+    $(function() {
+      panorama = GMaps.createPanorama({
+        el: '#street_view',
+        lat : <%= @court.long %>,
+        lng : <%= @court.lat %>
+      });
+      Reminder.render();
     });
-    Reminder.render();
-  });
-</script>
+  </script>
+<% end %>

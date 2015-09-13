@@ -11,7 +11,7 @@ class WalkthroughController < ApplicationController
     elsif person = Person.find_by(drivers_license_number: params[:q])
       case person.citations.count
       when 0 then response = {ok: "false", message: "You have no citations"}
-      when 1 then response = {ok: "true", location: citation_path(person)}
+      when 1 then response = {ok: "true", location: citation_path(person.citations.first)}
       else        response = {ok: "true", location: person_path(person)}
       end
     else
