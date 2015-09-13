@@ -1,159 +1,162 @@
-<% if @citation %>
-  <h1>
-    <%= @person.name %>
-  </h1>
-  <subtitle>
-    Citation #<%= @citation.citation_number %>
-  </subtitle>
-  <subtitle>
-    <% if @other_citations && @other_citations.any? %>
-      <%= link_to person_path(@person) do %>
-        You have <%= pluralize @other_citations.count, "other citation" %>
-      <% if @other_citations.warrants.any? %>
-        and <%= pluralize @other_citations.warrants.count, "warrant" %>
-      <% end %>
-      <% end %>
-    <% end %>
-  </subtitle>
-<% else %>
-<h1>
-  <%= @court.name %>
-</h1>
-<subtitle>
-  <%= @court.address %>
-</subtitle>
-
-<% end %>
-
-
-<% if @citation %>
-  <section>
-    <div class="citation-date date">
-      <% if @citation.citation_date %>
-        <span class="date-month"><%= @citation.citation_date.strftime("%b") %></span>
-        <span class="date-day"><%= @citation.citation_date.strftime("%-d") %></span>
-      <% end %>
-    </div>
-
-    <h2>What you were cited for</h2>
-
-    <ul class="citation-violations">
-      <% @citation.violations.each do |violation| %>
-        <li class="citation-violation violation <% if violation.warrant? %>violation-warrant<% end %>">
-          <span class="violation-description"><%= violation.violation_description %></span>
-          <% if violation.warrant? %>
-            <i class="fa fa-gavel" data-toggle="popover" data-trigger="hover" data-placement="top" title="Warrant" data-content="There is a warrant out for your arrest"></i>
-          <% end %>
-          <span class="violation-fees">
-            <% if violation.fine_amount %>
-              <%= number_to_currency violation.fine_amount + violation.court_cost %>
-            <% else %>
-              &mdash;
-            <% end %>
-          </span>
-        </li>
-      <% end %>
-    </ul>
-  </section>
-<% end %>
-
-<section>
+<div class="wrapper">
   <% if @citation %>
-    <div class="today date">
-      <span class="date-month"><%= @today.strftime("%b") %></span>
-      <span class="date-day"><%= @today.strftime("%-d") %></span>
-    </div>
-  <% end %>
-
-  <h2>What should I do now?</h2>
-
-  <% if @court.supports_online_payments? %>
-    <div class="callout callout-primary">
-      <h3>Pay your citation online</h3>
-      <div class="buttons">
-        <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
-      </div>
-      <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
-    </div>
-  <% else %>
-    <div class="callout callout-disabled">
-      <h3>Pay your citation via phone</h3>
-      <% if @court.phone_number %>
-      <div class="buttons">
-        <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
-      </div>
+    <h1>
+      <%= @person.name %>
+    </h1>
+    <subtitle>
+      Citation #<%= @citation.citation_number %>
+    </subtitle>
+    <subtitle>
+      <% if @other_citations && @other_citations.any? %>
+        <%= link_to person_path(@person) do %>
+          You have <%= pluralize @other_citations.count, "other citation" %>
+        <% if @other_citations.warrants.any? %>
+          and <%= pluralize @other_citations.warrants.count, "warrant" %>
+        <% end %>
+        <% end %>
       <% end %>
-      <%= @court.name %> does not support online payments; but you may still be able to pay your citation today by calling the courthouse.
-    </div>
+    </subtitle>
+  <% else %>
+    <h1>
+      <%= @court.name %>
+    </h1>
+    <subtitle>
+      <%= @court.address %>
+    </subtitle>
   <% end %>
 
-  <% if @court.supports_community_service_for?(@citation) %>
-    <div class="callout callout-sunny">
-      <h3>Do community service instead</h3>
-      <div class="buttons">
-        <%= link_to "Find approved service organizations", nil, class: "btn btn-lg btn-warning" %>
+
+  <% if @citation %>
+    <section>
+      <div class="citation-date date">
+        <% if @citation.citation_date %>
+          <span class="date-month"><%= @citation.citation_date.strftime("%b") %></span>
+          <span class="date-day"><%= @citation.citation_date.strftime("%-d") %></span>
+        <% end %>
       </div>
-      <%= @court.name %> may allow you to pay these fees with community service.
-    </div>
-  <% end %>
-</section>
 
-<% if @court %>
+      <h2>What you were cited for</h2>
+
+      <ul class="citation-violations">
+        <% @citation.violations.each do |violation| %>
+          <li class="citation-violation violation <% if violation.warrant? %>violation-warrant<% end %>">
+            <span class="violation-description"><%= violation.violation_description %></span>
+            <% if violation.warrant? %>
+              <span class="label label-danger">Warrant</span>
+            <% end %>
+            <span class="violation-fees">
+              <% if violation.fine_amount %>
+                <%= number_to_currency violation.fine_amount + violation.court_cost %>
+              <% else %>
+                &mdash;
+              <% end %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+
+      <%= render partial: "warrants" if @warrants.any? %>
+    </section>
+  <% end %>
+
   <section>
     <% if @citation %>
-      <div class="court-date date">
-        <% if @citation.court_date %>
-          <span class="date-month"><%= @citation.court_date.strftime("%b") %></span>
-          <span class="date-day"><%= @citation.court_date.strftime("%-d") %></span>
-        <% end %>
+      <div class="today date">
+        <span class="date-month"><%= @today.strftime("%b") %></span>
+        <span class="date-day"><%= @today.strftime("%-d") %></span>
       </div>
     <% end %>
 
-    <h2>What to expect on your court date</h2>
-    <div class="container-fluid">
-      <div class="col-md-6">
-        <h3><%= @court.name %></h3>
-        <div class="court-address">
-          <%= @court.address %><br />
-          St Louis, MO <%= @court.zip_code %>
-        </div>
-        <% if @court.phone_number %>
-          <div class="court-phone-number">
-            <%= @court.phone_number %>
-          </div>
-        <% end %>
-        <% if @court.website %>
-          <div class="court-website">
-            <%= link_to "Visit website", @court.website, target: "_blank" %>
-          </div>
-        <% end %>
-      </div>
-      <div class="col-md-6">
-        <div id="street_view" data-latitude="<%= @court.lat %>" data-longitude="<%= @court.long %>"></div>
-      </div>
-    </div>
+    <h2>What should I do now?</h2>
 
-    <% if @citation && @citation.court_date %>
-      <div class="callout">
-        <h3>Send me a reminder </h3>
-
-        <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
+    <% if @court.supports_online_payments? %>
+      <div class="callout callout-primary">
+        <h3>Pay your citation online</h3>
         <div class="buttons">
-          <form action="/texts/send_reminder" method="post" id="sms-reminder-form" class="input-group form-group form-group-lg" style="width: 14em">
-            <input name="citation_id" type="hidden" value="<%= @citation.id %>">
-            <input type="tel" name="number" class="form-control" placeholder="314 555 5555">
-
-            <span class="input-group-btn">
-              <button id="reminder-button" class="btn btn-lg btn-primary" type="submit">Remind me</button>
-            </span>
-          </form>
+          <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
         </div>
-        <small id="sms-message" class="text-success"></small>
+        <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
       </div>
+    <% else %>
+      <div class="callout callout-disabled <% unless @court.phone_number %>callout-no-action<% end %>">
+        <h3>Pay your citation via phone</h3>
+        <% if @court.phone_number %>
+        <div class="buttons">
+          <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
+        </div>
+        <% end %>
+        <%= @court.name %> does not support online payments; but you may still be able to pay your citation today by calling the courthouse.
+      </div>
+    <% end %>
 
+    <% if @court.supports_community_service_for?(@citation) %>
+      <div class="callout callout-sunny">
+        <h3>Do community service instead</h3>
+        <div class="buttons">
+          <%= link_to "Find approved service organizations", nil, class: "btn btn-lg btn-warning" %>
+        </div>
+        <%= @court.name %> may allow you to pay these fees with community service.
+      </div>
     <% end %>
   </section>
-<% end %>
+
+  <% if @court %>
+    <section>
+      <% if @citation %>
+        <div class="court-date date">
+          <% if @citation.court_date %>
+            <span class="date-month"><%= @citation.court_date.strftime("%b") %></span>
+            <span class="date-day"><%= @citation.court_date.strftime("%-d") %></span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <h2>What to expect on your court date</h2>
+      <div class="container-fluid">
+        <div class="col-md-6">
+          <h3><%= @court.name %></h3>
+          <div class="court-address">
+            <%= @court.address %><br />
+            St Louis, MO <%= @court.zip_code %>
+          </div>
+          <% if @court.phone_number %>
+            <div class="court-phone-number">
+              <%= @court.phone_number %>
+            </div>
+          <% end %>
+          <% if @court.website %>
+            <div class="court-website">
+              <%= link_to "Visit website", @court.website, target: "_blank" %>
+            </div>
+          <% end %>
+        </div>
+        <div class="col-md-6">
+          <div id="street_view" data-latitude="<%= @court.lat %>" data-longitude="<%= @court.long %>"></div>
+        </div>
+      </div>
+
+      <% if @citation && @citation.court_date %>
+        <div class="callout">
+          <h3>Send me a reminder </h3>
+
+          <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
+          <div class="buttons">
+            <form action="/texts/send_reminder" method="post" id="sms-reminder-form" class="input-group form-group form-group-lg" style="width: 14em">
+              <input name="citation_id" type="hidden" value="<%= @citation.id %>">
+              <input type="tel" name="number" class="form-control" placeholder="314 555 5555">
+
+              <span class="input-group-btn">
+                <button id="reminder-button" class="btn btn-lg btn-primary" type="submit">Remind me</button>
+              </span>
+            </form>
+          </div>
+          <small id="sms-message" class="text-success"></small>
+        </div>
+
+      <% end %>
+    </section>
+  <% end %>
+</div>
 
 <script type="text/javascript">
   $(function() {

@@ -28,6 +28,10 @@ class Citation < ActiveRecord::Base
     violations.warrants
   end
 
+  def warrants
+    violations.warrants
+  end
+
 
 
 private

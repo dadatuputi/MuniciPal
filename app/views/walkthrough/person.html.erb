@@ -1,49 +1,53 @@
-<h1><%= @person.name %></h1>
+<div class="wrapper">
+  <h1><%= @person.name %></h1>
 
-<subtitle>
-  You have <%= pluralize @citations.count, "citation" %>
-<% if @citations.warrants.any? %>
-  <em>and <%= pluralize @citations.warrants.count, "warrant" %></em>
-<% end %>
-</subtitle>
+  <subtitle>
+    You have <%= pluralize @citations.count, "citation" %>
+  <% if @citations.warrants.any? %>
+    and <%= pluralize @citations.warrants.count, "warrant" %>
+  <% end %>
+  </subtitle>
 
-<ul class="citations">
-<% @person.citations.each do |citation| %>
-  <li class="citation">
-    <%= link_to citation_path(citation) do %>
-      <div class="citatation-summary">
-        <div class="citation-date date">
-          <% if citation.citation_date %>
-            <span class="date-month"><%= citation.citation_date.strftime("%b") %></span>
-            <span class="date-day"><%= citation.citation_date.strftime("%-d") %></span>
-          <% else %>
-            <span class="date-month fake">Quz</span>
-            <span class="date-day fake"><%= 17 %></span>
-          <% end %>
+  <ul class="citations">
+  <% @person.citations.each do |citation| %>
+    <li class="citation">
+      <%= link_to citation_path(citation) do %>
+        <div class="citatation-summary">
+          <div class="citation-date date">
+            <% if citation.citation_date %>
+              <span class="date-month"><%= citation.citation_date.strftime("%b") %></span>
+              <span class="date-day"><%= citation.citation_date.strftime("%-d") %></span>
+            <% else %>
+              <span class="date-month fake">Quz</span>
+              <span class="date-day fake"><%= 17 %></span>
+            <% end %>
+          </div>
+          <div class="citation-number"><%= citation.citation_number %></div>
+          <ul class="citation-violations">
+            <% citation.violations.each do |violation| %>
+              <li class="citation-violation violation <% if violation.warrant? %>violation-warrant<% end %>">
+                <span class="violation-description"><%= violation.violation_description %></span>
+                <% if violation.warrant? %>
+                  <span class="label label-danger">Warrant</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
         </div>
-        <div class="citation-number"><%= citation.citation_number %></div>
-        <ul class="citation-violations">
-          <% citation.violations.each do |violation| %>
-            <li class="citation-violation violation <% if violation.warrant? %>violation-warrant<% end %>">
-              <span class="violation-description"><%= violation.violation_description %></span>
-              <% if violation.warrant? %>
-                <i class="fa fa-gavel" data-toggle="popover" data-trigger="hover" data-placement="top" title="Warrant" data-content="There is a warrant out for your arrest"></i>
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-      <% if citation.court %>
-        <div class="citation-court court">
-          <span class="court-municipality"><%= citation.court.name %></span>
-          <% if citation.court_date %>
-            <span class="court-date"><%= citation.court_date.strftime("%b %-d") %></span>
-          <% else %>
-            <span class="court-date">TBD</span>
-          <% end %>
-        </div>
+        <% if citation.court %>
+          <div class="citation-court court">
+            <span class="court-municipality"><%= citation.court.name %></span>
+            <% if citation.court_date %>
+              <span class="court-date"><%= citation.court_date.strftime("%b %-d") %></span>
+            <% else %>
+              <span class="court-date">TBD</span>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
-    <% end %>
-  </li>
-<% end %>
-</ul>
+    </li>
+  <% end %>
+  </ul>
+
+  <%= render partial: "warrants" if @warrants.any? %>
+</div>

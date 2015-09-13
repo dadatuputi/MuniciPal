@@ -33,12 +33,19 @@ h2.phone-number {
   font-size: 2.33em;
 }
 
-.callout {
-  background: #efefef; // gray now, maybe pick colors Sunday morning
+.block {
   margin: 0 -5px;
   padding: 1em;
 
+  &.block-shaded {
+    background: #efefef; // gray now, maybe pick colors Sunday morning
+  }
+
   h3 { margin-top: 0; }
+}
+
+.wrapper {
+  max-width: 42em;
 }
 
 h3 em {
@@ -65,4 +72,8 @@ subtitle {
 
 .buttons {
   text-align: right;
+}
+
+.btw {
+  font-size: 0.75em;
 }

@@ -1,11 +1,9 @@
 .citations {
-  margin: 3.33em;
   padding: 0;
 
   .citation {
     display: block;
     margin: 1em auto;
-    max-width: 42em;
 
     .citatation-summary {
       float: left;
@@ -89,12 +87,6 @@
 .citation-violation {
   display: block;
   padding: 0 5px;
-
-  &.violation-warrant {
-    background: #ffdad9;
-
-    .violation-description, .fa-gavel, .violation-fees { color: #c9302c; }
-  }
 }
 
 .violation-fees {
@@ -142,44 +134,7 @@ section {
 
   .citation-violations {
     padding-right: 5px;
-  }
-
-  .callout {
-    border-radius: 0.5em;
-    position: relative;
-    padding-right: 18em;
-    margin: 0 5px 2em;
-
-    .buttons {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 0;
-    }
-  }
-
-  .callout.callout-primary {
-    background: #e6f1fb;
-    padding-right: 12em; // these happen to have smaller buttons
-
-    h3 { color: #365773; }
-  }
-
-  .callout.callout-disabled {
-    background: #eee;
-
-    h3 { color: #555; }
-
-    .btn { pointer-events: none !important; }
-  }
-
-  .callout.callout-sunny {
-    background: #fff3e1;
-
-    h3 { color: #bf7b1a; }
+    margin-bottom: 2em;
   }
 
   h2 {
@@ -206,4 +161,64 @@ section {
 #street_view {
   height: 300px;
   width: 100%;
+}
+
+
+
+.callout {
+  border-radius: 0.5em;
+  position: relative;
+  margin: 0 5px 2em;
+  padding: 1em 18em 1em 1em;
+
+  &.callout-no-action {
+    padding-right: 1em !important;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+
+  .buttons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .buttons-float {
+    float: right;
+    margin: 1em 0 0 0.5em;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+}
+
+.callout.callout-primary {
+  background: #e6f1fb;
+  padding-right: 12em; // these happen to have smaller buttons
+
+  h3 { color: #365773; }
+}
+
+.callout.callout-warning {
+  background: #ffdad9;
+  padding-right: 12em; // these happen to have smaller buttons
+
+  h3 { color: #d9534f; }
+}
+
+.callout.callout-disabled {
+  background: #eee;
+
+  h3 { color: #555; }
+
+  .btn { pointer-events: none !important; }
+}
+
+.callout.callout-sunny {
+  background: #fff3e1;
+
+  h3 { color: #bf7b1a; }
 }

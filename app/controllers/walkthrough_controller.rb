@@ -1,7 +1,6 @@
 class WalkthroughController < ApplicationController
+
   def index
-    @citations = Citation.all
-    @people = Person.all
     @courts = Court.all
   end
 
@@ -24,10 +23,12 @@ class WalkthroughController < ApplicationController
   def person
     @person = Person.find params[:id]
     @citations = @person.citations
+    @warrants = @citations.warrants
   end
 
   def citation
     @citation = Citation.find params[:id]
+    @warrants = @citation.warrants
     @court = @citation.court
     @person = @citation.person
     @other_citations = @person.citations.where.not(id: @citation.id)
