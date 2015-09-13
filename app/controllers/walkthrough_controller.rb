@@ -7,8 +7,9 @@ class WalkthroughController < ApplicationController
   def search
     if citation = Citation.find_by(citation_number: params[:q])
       response = {ok: "true", location: citation_path(citation)}
-
-    elsif person = Person.find_by(drivers_license_number: params[:q])
+    elsif person = Person.find_by_name(params[:q])
+      response = {ok: "validate", name: person.first_name, birthday: person.date_of_birth, id: person.id }
+    elsif person = (params[:q] && Person.find_by(drivers_license_number: params[:q])) || Person.find_by(id: params[:id])
       case person.citations.count
       when 0 then response = {ok: "false", message: "You have no citations"}
       when 1 then response = {ok: "true", location: citation_path(person.citations.first)}
