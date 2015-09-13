@@ -216,3 +216,6 @@ Person.where(drivers_license_number: "M718460675").update_all(first_name: "Patri
 
 # Populate Ladue's court's real phone number
 Court.where(name: "Ladue").update_all(phone_number: "(314) 993-3919")
+
+# Fill in fake citation dates
+Citation.where(citation_date: nil).update_all(citation_date: Date.new(2015, 7, 7))
