@@ -43,6 +43,9 @@ class WalkthroughController < ApplicationController
   end
 
   def find_attorneys
-
   end
+
+  def community_service
+  end
+
 end
