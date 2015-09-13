@@ -352,7 +352,7 @@ class TextMessagesController < ApplicationController
       user = Person.find_by(drivers_license_number: words[0])
     elsif user.nil? && words[0].length >= 6 && words[0].length <= 9
       # Try citation number
-      citation = Citatation.find_by(citation_number: words[0])
+      citation = Citation.find_by(citation_number: words[0])
       user = citation.person unless citation.nil?
     elsif user.nil?
       # Try name and date of birth
