@@ -16,4 +16,5 @@
 //= require leaflet
 //= require gmaps
 //= require mousetrap
+//= require turbolinks
 //= require_tree .
