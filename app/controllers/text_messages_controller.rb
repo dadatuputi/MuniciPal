@@ -448,7 +448,7 @@ class TextMessagesController < ApplicationController
   FINE_COURT_SHORT = "(c)"
   COMMAND_UNKNOWN = " is an unknown command."
   COMMAND_UNKNOWN_ANON = " is an unkown command, citation, license number or user."
-  WARRANT_HELP_BOILERPLATE = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court.  The court might be willing to schedule a hearing or mitigate the jail time. Please call 800-200-1337 for free, anonymous assistance in resolving this issue."
+  WARRANT_HELP_BOILERPLATE = "The police have been instructed to arrest and hold you in jail until you can appear in court. The court might be willing to schedule a hearing or mitigate the jail time. Please call (800) 200-1337 for free, anonymous assistance in resolving this issue."
   WARRANT_HELP_BOILERPLATE_NO_DOT = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court  The court might be willing to schedule a hearing or mitigate the jail time Please call 800-200-1337 for free, anonymous assistance in resolving this issue"
 
 end
