@@ -36,6 +36,7 @@ h2.phone-number {
 .block {
   margin: 0 -5px;
   padding: 1em;
+  border-radius: 0.5em;
 
   &.block-shaded {
     background: #efefef; // gray now, maybe pick colors Sunday morning
@@ -50,7 +51,14 @@ h2.phone-number {
 
 h3 em {
   font-style: normal;
-  background: #fffccf;
+//  background: #fffccf;
+  color: #337AB7;
+  display: inline-block;
+  font-size: 1.33em;
+
+  position: relative;
+  top: 2px;
+  text-transform: uppercase;
 }
 
 .icon {
