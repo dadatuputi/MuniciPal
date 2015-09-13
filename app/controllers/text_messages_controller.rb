@@ -241,6 +241,7 @@ class TextMessagesController < ApplicationController
         warrant = violation.warrant?
         violations.concat(VIOLATION_SHORT).concat((index+1).to_s).concat(": ")
         violations.concat(WARRANT_FLAG_SHORT).concat(" ") if warrant
+        description = violation.violation_description
         description = violation.violation_description[0,29].concat("...") if violation.violation_description.length > 30
         violations.concat(description).concat(" ")
         unless violation.fine_amount.nil?
