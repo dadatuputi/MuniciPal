@@ -69,21 +69,31 @@
 
   <% if @court.supports_online_payments? %>
     <div class="callout callout-primary">
-      <h3><%= @court.name %> supports online payments</h3>
+      <h3>Pay your citation online</h3>
       <div class="buttons">
         <%= link_to "Pay now", @court.online_payment_website, class: "btn btn-lg btn-primary", target: "_blank" %>
       </div>
-      You can pay your citation today, online, and scratch the following court date off your calendar.
+      <%= @court.name %> supports online payments. You can pay your citation today, online, and scratch the following court date off your calendar.
     </div>
   <% else %>
     <div class="callout callout-disabled">
-      <h3><%= @court.name %> does not support online payments</h3>
+      <h3>Pay your citation via phone</h3>
       <% if @court.phone_number %>
       <div class="buttons">
         <span class="btn btn-lg btn-default"><%= @court.phone_number %></span>
       </div>
       <% end %>
-      You may still be able to pay your citation today by calling the courthouse.
+      <%= @court.name %> does not support online payments; but you may still be able to pay your citation today by calling the courthouse.
+    </div>
+  <% end %>
+
+  <% if @court.supports_community_service_for?(@citation) %>
+    <div class="callout callout-sunny">
+      <h3>Do community service instead</h3>
+      <div class="buttons">
+        <%= link_to "Find approved service organizations", nil, class: "btn btn-lg btn-warning" %>
+      </div>
+      <%= @court.name %> may allow you to pay these fees with community service.
     </div>
   <% end %>
 </section>
@@ -127,13 +137,16 @@
       <div class="callout">
         <h3>Send me a reminder</h3>
         <p>Enter your phone number and we'll text you a reminder the day before your court date</p>
-        <form action="/texts/send_reminder" method="post" class="input-group form-group form-group-lg">
-          <input name="citation_id" type="hidden" value="<%= @citation.id %>">
-          <input type="tel" name="number" class="form-control" placeholder="314 555 5555">
-          <span class="input-group-btn">
-            <button class="btn btn-lg btn-primary" type="submit">Submit</button>
-          </span>
-        </form>
+        <div class="buttons">
+          <form action="/texts/send_reminder" method="post" class="input-group form-group form-group-lg" style="width: 14em">
+            <input name="citation_id" type="hidden" value="<%= @citation.id %>">
+            <input type="tel" name="number" class="form-control" placeholder="314 555 5555">
+          
+            <span class="input-group-btn">
+              <button class="btn btn-lg btn-primary" type="submit">Remind me</button>
+            </span>
+          </form>
+        </div>
       </div>
     <% end %>
   </section>

@@ -33,6 +33,12 @@ class Court < ActiveRecord::Base
     online_payment_provider.present?
   end
 
+  def supports_community_service_for?(citation)
+    # It is probably not true that every courthouse
+    # will support community service for every citation!
+    true
+  end
+
   def online_payment_website
     # WEBSITES.fetch online_payment_provider
     "https://www.ipaycourt.com/frmCitationSearch.aspx?ori="

@@ -147,7 +147,7 @@ section {
   .callout {
     border-radius: 0.5em;
     position: relative;
-    padding-right: 12em;
+    padding-right: 18em;
     margin: 0 5px 2em;
 
     .buttons {
@@ -155,10 +155,15 @@ section {
       bottom: 20px;
       right: 20px;
     }
+
+    .form-group {
+      margin-bottom: 0;
+    }
   }
 
   .callout.callout-primary {
     background: #e6f1fb;
+    padding-right: 12em; // these happen to have smaller buttons
 
     h3 { color: #365773; }
   }
@@ -169,6 +174,12 @@ section {
     h3 { color: #555; }
 
     .btn { pointer-events: none !important; }
+  }
+
+  .callout.callout-sunny {
+    background: #fff3e1;
+
+    h3 { color: #bf7b1a; }
   }
 
   h2 {
