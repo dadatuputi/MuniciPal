@@ -49,6 +49,10 @@ h2.phone-number {
   max-width: 42em;
 }
 
+h3 {
+  font-weight: 700;
+}
+
 h3 em {
   font-style: normal;
 //  background: #fffccf;
@@ -59,6 +63,7 @@ h3 em {
   position: relative;
   top: 2px;
   text-transform: uppercase;
+  font-weight: 400;
 }
 
 .icon {

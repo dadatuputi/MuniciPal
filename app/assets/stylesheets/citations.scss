@@ -1,6 +1,10 @@
+.citations-count {
+  margin-top: 3em;
+}
+
 .citations {
   padding: 0;
-  margin: 3em 0 2em;
+  margin: 0 0 2em;
 
   .citation {
     display: block;
@@ -24,6 +28,7 @@
 
     .citation-number {
       font-size: 1.33em;
+      font-weight: 700;
     }
 
     .citation-court {
@@ -178,6 +183,7 @@ section {
 
   h3 {
     margin-top: 0;
+    white-space: nowrap;
   }
 
   .buttons {
