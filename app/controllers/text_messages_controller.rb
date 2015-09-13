@@ -30,10 +30,8 @@ class TextMessagesController < ApplicationController
 
   # HELPER FUNCTIONS
   def sms_controller(sms)
-    # TODO Identify State
-    state = nil
-    #suzy = Person.find_by(phone_number: phone_number)
-    #suzy.name
+    # TODO Identify user
+    user = Person.file_by(phone_number: sms.from)
 
     # Get Command from message
     words = sms.text.split
@@ -41,18 +39,18 @@ class TextMessagesController < ApplicationController
     # Route commands
     case firstword
     when "HELLO".downcase
-      text = sms_command_hello
+      text = sms_command_hello(user)
     when "HELP".downcase
-      text = sms_command_help
+      text = sms_command_help(user)
     when "STOP".downcase
-      text = sms_command_stop
+      text = sms_command_stop(user)
     when "STATUS".downcase
-      text = sms_command_status
+      text = sms_command_status(user)
     when "CALLME".downcase
-      text = sms_command_callme(sms, state)
+      text = sms_command_callme(sms, user)
     else
       firstword = firstword[0,6].concat("...") if firstword.length > 10
-      text = sms_command_help("#{firstword} is an unknown command.\n\n")
+      text = sms_command_help("#{firstword} is an unknown command.\n\n", user)
     end
 
     # Send response
@@ -65,7 +63,7 @@ class TextMessagesController < ApplicationController
   def sms_command_help(message="")
     # Build Help Output
     message.concat("Available commands:\n")
-    COMMANDS.each {|command, description| message.concat("#{command}: #{description}\n") }
+    COMMANDS_ANON.each {|command, description| message.concat("#{command}: #{description}\n") }
     message
   end
 
@@ -105,8 +103,8 @@ class TextMessagesController < ApplicationController
   end
 
 
-  def sms_command_callme(sms, state)
-    if state.nil?
+  def sms_command_callme(sms, user)
+    if user.nil?
       return ""
     else
       p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
@@ -128,12 +126,18 @@ class TextMessagesController < ApplicationController
 
   ## STATIC STRINGS
   APP_NAME = "MuniciPal".freeze
-  COMMANDS = {
-    "HELLO" => "Start the walkthrough.",
-    "HELP" => "This text.",
-    "STOP" => "Stop receiving ".concat(APP_NAME).concat(" messages."),
-    "STATUS" => "Check your status.",
-    "CALLME" => "Call you back with citation status."
+  COMMANDS_ANON = {
+    "HELP" => "List commands.",
+    "HELLO" => "Start walkthrough.",
+    "STOP" => "Stop receiving ".concat(APP_NAME).concat(" msgs & close session."),
+  }.freeze
+  COMMANDS_AUTH = {
+    "HELP" => "List commands.",
+    "HELLO" => "Restart walkthrough.",
+    "STOP" => "Stop receiving ".concat(APP_NAME).concat(" msgs & close session."),
+    "LIST" => "List citations.",
+    "DETAIL #" => "Show detail",
+    "CALLME" => "Call you back with information.",
   }.freeze
   HELLO_WELCOME = "Welcome to #{APP_NAME}\n\nTo get started send us a citation number or drivers license number."
   STOP_RESPONSE = "You will no longer receive messages from #{APP_NAME}"
