@@ -17,7 +17,8 @@ class TextMessagesController < ApplicationController
     court = citation.court
     sms_send SMS.new(number, FROM_NUMBER, "Friendly reminder! You are due in court at #{court.name} tomorrow with regard to citation ##{citation.citation_number}")
 
-    redirect_to :back
+    response = {ok: "true", message: "You have successfully signed up for a reminder!"}
+    render json: response
   end
 
   def receive
