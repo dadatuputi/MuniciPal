@@ -311,9 +311,9 @@ class TextMessagesController < ApplicationController
   def sms_command_warrant(user)
     message = ""
     unless user.nil?
-      warrants = user.warrants.count
-      if warrants.length >= 1
-        message.concat("There are #{pluralize warrants.count, "warrant"} issued for your arrest.\n").concat(WARRANT_HELP_BOILERPLATE)
+      warrants_count = user.warrants.count
+      if warrants_count >= 1
+        message.concat("There are #{pluralize warrants_count, "warrant"} issued for your arrest.\n").concat(WARRANT_HELP_BOILERPLATE)
       else
         message.concat("There are no outstanding warrants for your arrest.")
       end
