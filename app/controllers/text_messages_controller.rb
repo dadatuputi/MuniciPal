@@ -47,16 +47,16 @@ class TextMessagesController < ApplicationController
     unless user.nil?
       # English Text
       body1 = ""
-      body1.concat("Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name).concat(".")
+      body1.concat("Welcome to ").concat(APP_NAME).concat(", ").concat(user.first_name).concat(" ").concat(user.last_name)
       # Warrant
       citations = user.citations
       warrant = has_warrant(user)
-      body1.concat("Attention! You have an arrest warrant issued to you. Please call 800-200-1337 for free assistance in resolving this issue.") if warrant
+      body1.concat("Attention! You have an arrest warrant issued to you Please call 800-200-1337 for free, anonymous assistance in resolving this issue") if warrant
       # Citations
       number_citations = 0
       number_citations = citations.length unless number_citations.nil?
-      body1.concat("You have ").concat(number_citations.to_s).concat(" citations.")
-      body1.concat(WARRANT_HELP_BOILERPLATE) if warrant
+      body1.concat("You have ").concat(number_citations.to_s).concat(" citations")
+      body1.concat(WARRANT_HELP_BOILERPLATE_NO_DOT) if warrant
 
       params1 = {
           'language'=> "en-GB",
@@ -441,7 +441,8 @@ class TextMessagesController < ApplicationController
   FINE_COURT_SHORT = "(c)"
   COMMAND_UNKNOWN = " is an unknown command."
   COMMAND_UNKNOWN_ANON = " is an unkown command, citation, license number or user."
-  WARRANT_HELP_BOILERPLATE = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court.  The court might be willing to schedule a hearing or mitigate the jail time."
+  WARRANT_HELP_BOILERPLATE = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court.  The court might be willing to schedule a hearing or mitigate the jail time. Please call 800-200-1337 for free, anonymous assistance in resolving this issue."
+  WARRANT_HELP_BOILERPLATE_NO_DOT = "When you have a warrant, the police have been instructed to arrest and hold you in jail until you can appear in court  The court might be willing to schedule a hearing or mitigate the jail time Please call 800-200-1337 for free, anonymous assistance in resolving this issue"
   WARRANT_HELP_HAS_NOT = "We can't find any warrants for you. " + WARRANT_HELP_BOILERPLATE
 
 end
