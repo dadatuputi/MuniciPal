@@ -123,7 +123,7 @@ class TextMessagesController < ApplicationController
       when "COURT".downcase
         text = sms_command_court(user, words)
       when "CALLME".downcase
-        text = sms_command_callme(sms, user, words)
+        text = sms_command_callme(sms)
       else
         firstword = firstword[0,6].concat("...") if firstword.length > 10
         message = "#{firstword}".concat(COMMAND_UNKNOWN).concat("\n\n")
@@ -148,7 +148,7 @@ class TextMessagesController < ApplicationController
       commands = COMMANDS_AUTH
     end
 
-    COMMANDS_ANON.each {|command, description| message.concat("#{command}: #{description}\n") }
+    commands.each {|command, description| message.concat("#{command}: #{description}\n") }
 
     message
   end
@@ -221,7 +221,7 @@ class TextMessagesController < ApplicationController
       # Go through each citation and if one has a warrant, set flag
       citation.violations.each_with_index do |violation, index|
         warrant = violation.warrant?
-        violations.concat(VIOLATION_SHORT).concat(index).concat(": ")
+        violations.concat(VIOLATION_SHORT).concat(index+1).concat(": ")
         violations.concat(WARRANT_FLAG_SHORT).concat(" ") if warrant
         description = violation.violation_description[0,11].concat("...") if violation.violation_description.length > 15
         violations.concat(description).concat(" ")
@@ -241,7 +241,7 @@ class TextMessagesController < ApplicationController
       message.concat("\n\n").concat(violations)
       message
     else
-      return message.concat(DETAIL_INVALID).concat(1)
+      return message.concat(DETAIL_INVALID).concat("1")
     end
   end
 
@@ -267,28 +267,25 @@ class TextMessagesController < ApplicationController
       message.concat("Website: ").concat(court.municipal_website) unless court.municipal_website.nil?
       message
     else
-      return message.concat(DETAIL_INVALID).concat(1)
+      return message.concat(DETAIL_INVALID).concat("1")
     end
   end
 
-  def sms_command_callme(sms, user)
-    unless user.nil?
+  def sms_command_callme(sms)
+    p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
 
-      p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
+    params = {
+        'to' => sms.from, # The phone number to which the call has to be placed
+        'from' => sms.to, # The phone number to be used as the caller id
+        'answer_url' => 'https://municipal-app.herokuapp.com/texts/callback', # The URL invoked by Plivo when the outbound call is answered
+        'answer_method' => 'GET', # The method used to call the answer_url
+        # Example for Asynchrnous request
+        #'callback_url' => "https://enigmatic-cove-3140.herokuapp.com/callback", # The URL notified by the API response is available and to which the response is sent.
+        #'callback_method' => "GET" # The method used to notify the callback_url.
+    }
 
-      params = {
-          'to' => sms.from, # The phone number to which the call has to be placed
-          'from' => sms.to, # The phone number to be used as the caller id
-          'answer_url' => 'https://municipal-app.herokuapp.com/texts/callback', # The URL invoked by Plivo when the outbound call is answered
-          'answer_method' => 'GET', # The method used to call the answer_url
-          # Example for Asynchrnous request
-          #'callback_url' => "https://enigmatic-cove-3140.herokuapp.com/callback", # The URL notified by the API response is available and to which the response is sent.
-          #'callback_method' => "GET" # The method used to notify the callback_url.
-      }
-
-      # Make an outbound call
-      response = p.make_call(params)
-    end
+    # Make an outbound call
+    response = p.make_call(params)
   end
 
   def lookup_citation(user, words)
@@ -303,7 +300,7 @@ class TextMessagesController < ApplicationController
       citations = citations_sort(user)
 
       unless citations.nil? || number >= citations.length
-        citation = citations[number]
+        citation = citations[number-1]
       end
     end
 
