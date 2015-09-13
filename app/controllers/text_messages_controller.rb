@@ -237,7 +237,7 @@ class TextMessagesController < ApplicationController
       # Put details all together.
       message.concat(WARRANT_FLAG).concat("\n") if warrant
       message.concat(CITATION_LONG).concat(" ").concat(citation.citation_number).concat(":")
-      message.concat("-").concat(citation.citation_date) unless citation.citation_date.nil?
+      message.concat("-").concat(citation.citation_date.to_s) unless citation.citation_date.nil?
       message.concat("\n\n").concat(violations)
       message
     else
@@ -264,7 +264,7 @@ class TextMessagesController < ApplicationController
         message.concat("\n")
       end
       message.concat("Pay Online? ").concat("Y:").concat(court.online_payment_provider).concat("\n") unless court.online_payment_provider.nil?
-      message.concat("Website: ").concat(court.municipal_website) unless court.municipal_website.nil?
+      message.concat("Website: ").concat(court.website) unless court.website.nil?
       message
     else
       return message.concat(DETAIL_INVALID).concat("1")
@@ -273,6 +273,7 @@ class TextMessagesController < ApplicationController
 
   def sms_command_callme(sms)
     p = RestAPI.new(AUTH_ID, AUTH_TOKEN)
+    byebug if Rails.env.development?
 
     params = {
         'to' => sms.from, # The phone number to which the call has to be placed
