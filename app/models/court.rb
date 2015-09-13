@@ -28,7 +28,7 @@ class Court < ActiveRecord::Base
   end
 
   def phone_number=(value)
-    value = value.to_s[/^[^(]*/].strip # remove parenthetical comments
+    value = value.to_s[/^[^(]*/].strip # remove parenthetical comments in spreadsheet
     value = nil if value == "not listed"
     value = value.gsub(/^(\d{3})\.(\d{3})\.(\d{4})/, '(\1) \2-\3') if value
     super value
@@ -39,14 +39,17 @@ class Court < ActiveRecord::Base
   end
 
   def supports_community_service_for?(citation)
-    # It is probably not true that every courthouse
+    # It is probably not true that *every* courthouse
     # will support community service for every citation!
     true
   end
 
   def online_payment_website
-    # WEBSITES.fetch online_payment_provider
-    "https://www.ipaycourt.com/frmCitationSearch.aspx?ori="
+    WEBSITES.fetch online_payment_provider
+  rescue KeyError
+    # TODO: populate the rest of the URLs for all the possible
+    # citation payment providers
+    nil
   end
 
   def add_geometry!(new_geometry)
