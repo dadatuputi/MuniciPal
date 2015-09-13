@@ -41,4 +41,7 @@ class WalkthroughController < ApplicationController
     render action: :citation
   end
 
+  def find_attorneys
+
+  end
 end
